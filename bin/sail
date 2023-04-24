@@ -48,8 +48,8 @@ function display_help {
     echo "  ${GREEN}sail off${NC}       Finish the docker service's"
     echo
     echo "${YELLOW}create projects:${NC}"
-    echo "  ${GREEN}sail create-back {version} {project-name} ${NC}  Create new laravel projects"
-    echo "  ${GREEN}sail create-front {version} {project-name} ${NC}  Create new nodeJS projects"
+    echo "  ${GREEN}sail create-back {laravel-version} {project-name} ${NC}  Create new laravel projects"
+    echo "  ${GREEN}sail create-front {nodejs-version} {project-name} ${NC}  Create new nodeJS projects"
     echo
     echo "${YELLOW}docker-compose Commands:${NC}"
     echo "  ${GREEN}sail up${NC}        Start the application"
