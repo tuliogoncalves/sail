@@ -1,0 +1,17 @@
+version: "3.7"
+
+services:
+    app:
+        image: ${APP_PROJECT_NAME}-php:prod
+        build:
+            target: production
+
+    nginx:
+        image: ${APP_PROJECT_NAME}-nginx:prod
+        build:
+            args:
+                user: '${WWWUSER}'
+            context: .
+            dockerfile: ./docker/nginx/Dockerfile
+        ports:
+            - "80:80"

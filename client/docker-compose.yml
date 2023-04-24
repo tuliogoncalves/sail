@@ -1,0 +1,64 @@
+version: "3.7"
+
+networks:
+  app:
+    name: ${APP_PROJECT_NAME}
+
+  proxy:
+    external: true
+
+services:
+    # app
+    app:
+        container_name: ${APP_PROJECT_NAME}-app
+        build:
+            args:
+                user: '${WWWUSER}'
+                uid: '${WWWGROUP}'
+            context: .
+            dockerfile: ./docker/php/Dockerfile
+        image: ${APP_PROJECT_NAME}-php:local
+        restart: unless-stopped
+        networks:
+            - app
+            - proxy
+
+    # nginx
+    nginx:
+        container_name: ${APP_PROJECT_NAME}-nginx
+        image: nginx:stable-alpine
+        restart: unless-stopped
+        networks: 
+            - app
+            - proxy
+
+    # # queue
+    # queue:
+    #     container_name: ${APP_PROJECT_NAME}-queue
+    #     image: ${APP_PROJECT_NAME}-php:latest
+    #     restart: unless-stopped
+    #     working_dir: /var/www/
+    #     volumes:
+    #         - ./:/var/www
+    #         - ./docker/supervisord/supervisord.queue.conf:/etc/supervisor/conf.d/supervisord.conf
+    #         - ./docker/assets/php.ini:/usr/local/etc/php/conf.d/scripptage.ini
+    #     depends_on: 
+    #         - app
+    #         - redis
+    #     networks: 
+    #         - app
+    #         - proxy
+
+    # # shedule
+    # shedule:
+    #     container_name: ${APP_PROJECT_NAME}-shedule
+    #     image: ${APP_PROJECT_NAME}-php74:latest
+    #     restart: unless-stopped
+    #     working_dir: /var/www/
+    #     volumes:
+    #         - ./:/var/www
+    #         - ./docker/supervisord/supervisord.shedule.conf:/etc/supervisor/conf.d/supervisord.conf
+    #         - ./docker/assets/php.ini:/usr/local/etc/php/conf.d/scripptage.ini
+    #     networks: 
+    #         - app
+    #         - proxy

@@ -1,0 +1,32 @@
+###
+Start this project
+###
+
+0) Create new laravel project
+        $ sail create-back v10.1.1 sp-admin-back
+        $ cd sp-admin-back
+        $ git init --initial-branch=main
+        $ git remote add origin <repository>
+        $ git init -b main
+
+1) copy env.example to .env on root directory
+
+2) build local image
+        $ sail build
+
+3) start all services
+        $ sail up -d
+
+4) Installs the project dependencies
+
+5) Install all the NodeJS dependencies of a project
+        $ sail npm install
+
+6) Set the application key
+        $ sail art key:generate
+
+7) Run the database migrations
+        $ sail art migrate
+
+8) Seed the database with records
+        $ sail art db:seed

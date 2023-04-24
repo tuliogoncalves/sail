@@ -1,0 +1,77 @@
+version: "3.7"
+
+services:
+
+  # MariaDB
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10.7.4-focal
+    ports:
+      - 3306:3306
+    environment:
+        MYSQL_ROOT_PASSWORD: 'pwd123'
+        MYSQL_ROOT_HOST: "%"
+        # MYSQL_DATABASE: '${DB_DATABASE}'
+        # MYSQL_USER: 'db_user'
+        # MYSQL_PASSWORD: 'pass123'
+        MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes: 
+        - db-data:/var/lib/mysql
+    networks: 
+      - proxy
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
+
+  # Redis
+  redis:
+    container_name: redis
+    image: redis:latest
+    volumes: 
+        - redis-data:/data
+    networks: 
+        - proxy
+
+  # Caddy
+  # caddy:
+  #   image: caddy:2.1.1-alpine
+  #   container_name: caddy
+  #   restart: unless-stopped
+  #   ports:
+  #     - 80:80
+  #     - 443:443
+  #     - 127.0.0.1:2019:2019
+  #   volumes:
+  #     - ./caddy/data:/data
+  #     - ./caddy/config:/config
+  #     - ./caddy/logs:/logs
+  #     - ./caddy/certs:/certs
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #   networks:
+  #     - proxy
+
+# SQL Server (Express)
+# docker run -d 
+#   -p 1433:1433
+#   --name srv-sqlserver
+#   --hostname srv-sqlserver
+#   --network siafic_net
+#   --restart always
+#   --ip 10.5.0.250
+#   -v /opt/sql-server:/var/opt/mssql/data
+#   -e "ACCEPT_EULA=Y"
+#   -e "MSSQL_SA_PASSWORD=#1qaz2wsx!"
+#   -e "MSSQL_PID=Express" 
+#   mcr.microsoft.com/mssql/server:2019-latest
+#
+##   docker network connect siafic-convenio srv-sqlserver
+
+networks:
+  proxy:
+    external: true
+
+volumes:
+  db-data:
+  redis-data:

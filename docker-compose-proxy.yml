@@ -1,0 +1,21 @@
+version: "3.7"
+
+services:
+
+  # Caddy
+  caddy:
+    container_name: caddy
+    image: caddy:2.1.1-alpine
+    restart: unless-stopped
+    ports:
+      - 80:80
+      - 443:443
+      - 127.0.0.1:2019:2019
+    volumes:
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+      - ./caddy/logs:/logs
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/certs:/certs
+    networks:
+      - proxy
