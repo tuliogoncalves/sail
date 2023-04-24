@@ -5,9 +5,11 @@ Start this project
 0) Create new laravel project
         $ sail create-back v10.1.1 sp-admin-back
         $ cd sp-admin-back
-        $ git init --initial-branch=main
-        $ git remote add origin <repository>
         $ git init -b main
+        $ git add .
+        $ git commit -m "initial commit"
+        $ git remote add origin <repository>
+        $ git push -u origin main
 
 1) copy env.example to .env on root directory
 
