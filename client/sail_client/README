@@ -20,6 +20,7 @@ Start this project
         $ sail up -d
 
 4) Installs the project dependencies
+        $ sail composer install
 
 5) Install all the NodeJS dependencies of a project
         $ sail npm install
@@ -32,3 +33,9 @@ Start this project
 
 8) Seed the database with records
         $ sail art db:seed
+
+
+Notes
+=====
+
+  when "requires ext-zip" to php80 uses "--ignore-platform-req=ext-zip" for composer

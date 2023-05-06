@@ -1,12 +1,5 @@
 version: "3.7"
 
-networks:
-  app:
-    name: ${APP_PROJECT_NAME}
-
-  proxy:
-    external: true
-
 services:
     app:
         container_name: ${APP_PROJECT_NAME}-app
@@ -15,49 +8,24 @@ services:
                 user: '${WWWUSER}'
                 uid: '${WWWGROUP}'
             context: .
-            dockerfile: ./sail_client/php/Dockerfile
-        image: ${APP_PROJECT_NAME}-php:local
+            dockerfile: ./sail_client/php/Dockerfile_prod
+        image: ${APP_PROJECT_NAME}-php:prod
         restart: unless-stopped
-        volumes:
-            - ./:/var/www
-            - ./sail_client/supervisor/supervisord.php.conf:/etc/supervisor/conf.d/supervisord.conf
-            - ./sail_client/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+        depends_on: 
+            - mariadb
+            - redis
         networks:
             - app
             - proxy
 
-    nginx:
-        container_name: ${APP_PROJECT_NAME}-nginx
-        image: nginx:stable-alpine
+    worker:
+        container_name: ${APP_PROJECT_NAME}-worker
+        image: ${APP_PROJECT_NAME}-php:prod
         restart: unless-stopped
-        ports:
-            - "80:80"
-        volumes: 
-            - ./:/var/www
-            - ./sail_client/nginx/local/:/etc/nginx/conf.d/
+        working_dir: /var/www/
+        depends_on: 
+            - mariadb
+            - redis
         networks: 
             - app
             - proxy
-
-    # # nodeJs
-    # nodejs:
-    #     container_name: ${APP_PROJECT_NAME}-nodejs
-    #     build:
-    #         args:
-    #             user: '${WWWUSER}'
-    #             uid: '${WWWGROUP}'
-    #         context: ./docker/node
-    #         dockerfile: Dockerfile
-    #     image: nodejs
-    #     tty: true
-    #     restart: unless-stopped
-    #     working_dir: /var/www/
-    #     volumes:
-    #         - ./:/var/www
-    #     depends_on: 
-    #         - app
-    #     networks: 
-    #         - app
-    #         - proxy
-
-

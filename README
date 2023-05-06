@@ -78,37 +78,3 @@ VSCode PHP executable Path in docker
 2) Make it executable:
         $ sudo chmod +x /usr/local/bin/php
 
-
-
-###
-Start this project
-###
-
-1) copy env.example to .env on root directory
-
-2) build local image
-        $ sail build
-
-3) start all services
-        $ sail up -d
-
-4) Installs the project dependencies
-        $ sail composer install
-
-5) Install all the NodeJS dependencies of a project
-        $ sail npm install
-
-6) Set the application key
-        $ sail art key:generate
-
-7) Run the database migrations
-        $ sail art migrate
-
-8) Seed the database with records
-        $ sail art db:seed
-
-
-Notes
-=====
-
-  when "requires ext-zip" to php80 uses "--ignore-platform-req=ext-zip" for composer
