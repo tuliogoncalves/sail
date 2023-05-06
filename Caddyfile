@@ -1,0 +1,37 @@
+{
+}
+
+(tls) {
+  encode gzip
+}
+
+# Cache static files for 60 days
+(static) {
+        @static {
+                file
+                path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.json
+        }
+        header @static Cache-Control max-age=5184000
+}
+
+(security) {
+   header * {
+    -Server
+    Server "Apache/2"
+    Powered-By "PHP/7.4"
+    # ****** Security - Use in Production ******
+    # Strict-Transport-Security "max-age=30758400"
+    # X-Content-Type-Options            "nosniff"
+    # X-Frame-Options                   "deny"
+    # X-XSS-Protection          "1; mode=block"
+    # Referrer-Policy                   "same-origin"
+    # ****** End Security ******
+    -x-powered-by
+  }
+}
+
+workscript.localhost {
+  import security
+  import static
+  reverse_proxy workscript-nginx:80
+}
