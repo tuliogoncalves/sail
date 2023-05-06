@@ -227,7 +227,7 @@ fi
 ARGS=()
 
 if [ "$APP_ENV" == "local" ]; then
-    if [ -f ./sail-docker-compose-local.yml ]; then
+    if [ -f ./sail-docker-compose.yml ]; then
         ARGS+=(-f sail-docker-compose.yml)
     fi
 fi
