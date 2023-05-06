@@ -6,11 +6,46 @@ This project was based on Laravel\Sail and extended to serve distributed solutio
 
 1) Install Docker engine and Docker compose
 
-        https://docs.docker.com/engine/install/
+### On Windows, prepare WSL
 
-        When need access private repositories
-                $ docker login
+        1) Run prompt or powershell as administrator mode.
 
+        2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
+        
+        `wsl --install`
+
+        Or, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
+        
+        `wsl --install -d kali-linux`
+        
+        3) Check WSL version (WSL2 required).
+        
+        `wsl -l -v`
+        
+        - If the distro is not in version 2, it is necessary to move the distro to version 2. In my example, it would be:
+        
+        `wsl --set-version kali-linux 2`
+        
+        - Soon after, put the distro as default, to avoid any problems with docker.
+        
+        `wsl --set-default kali-linux`
+
+### Installing Docker and compose
+
+On windows, inside the distro's terminal (open from the start menu), 
+        
+update the Ubuntu APT repository.
+
+`sudo apt update`
+
+Then install docker in your Linux environment with the command:
+
+`sudo apt install docker.io -y`
+
+
+
+### When need access private repositories
+        `docker login`
 
 ### If you want to run docker as non-root user then you need to add it to the docker group.
 
