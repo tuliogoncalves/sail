@@ -1,5 +1,4 @@
-FROM php:8.1-fpm as php
-LABEL stage=production
+FROM php:8.1-fpm as php_prod
 
 # Arguments defined in docker-compose.yml
 ARG user

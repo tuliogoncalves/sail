@@ -1,5 +1,4 @@
-FROM php:8.1-fpm
-LABEL stage=local
+FROM php:8.1-fpm as php_local
 
 # Arguments defined in docker-compose.yml
 ARG user
