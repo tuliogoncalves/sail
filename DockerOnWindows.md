@@ -17,12 +17,11 @@
 - If the distro is not in version 2, it is necessary to move the distro to version 2. In my example, it would be:
     
      wsl --set-version kali-linux 2
-     ```
     
 - Soon after, put the distro as default, to avoid any problems with docker.
     
      wsl --set-default kali-linux
-    
+     
 - Inside the distro's terminal (open from the start menu), and update the Ubuntu APT repository.
     
      sudo apt update
