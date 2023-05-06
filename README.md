@@ -8,27 +8,27 @@ This project was based on Laravel\Sail and extended to serve distributed solutio
 
 ### On Windows, prepare WSL
 
-        1) Run prompt or powershell as administrator mode.
+1) Run prompt or powershell as administrator mode.
 
-        2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
-        
-        `wsl --install`
+2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
 
-        Or, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
-        
-        `wsl --install -d kali-linux`
-        
-        3) Check WSL version (WSL2 required).
-        
-        `wsl -l -v`
-        
-        - If the distro is not in version 2, it is necessary to move the distro to version 2. In my example, it would be:
-        
-        `wsl --set-version kali-linux 2`
-        
-        - Soon after, put the distro as default, to avoid any problems with docker.
-        
-        `wsl --set-default kali-linux`
+`wsl --install`
+
+Or, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
+
+`wsl --install -d kali-linux`
+
+3) Check WSL version (WSL2 required).
+
+`wsl -l -v`
+
+- If the distro is not in version 2, it is necessary to move the distro to version 2. In my example, it would be:
+
+`wsl --set-version kali-linux 2`
+
+- Soon after, put the distro as default, to avoid any problems with docker.
+
+`wsl --set-default kali-linux`
 
 ### Installing Docker and compose
 
