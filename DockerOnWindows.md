@@ -6,7 +6,7 @@
     
      `wsl --install`
 
-     OR, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
+     - OR, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
     
      `wsl --install -d kali-linux`
     
