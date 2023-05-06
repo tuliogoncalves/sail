@@ -1,10 +1,8 @@
 # Sail
 
-Esse projeto foi baseado no Laravel\Sail e estendido para atender soluções distribuídas (microservices).
+This project was based on Laravel\Sail and extended to serve distributed solutions (microservices).
 
-###
-System requirements
-###
+## System requirements
 
         Install Docker engine
            and 
@@ -39,9 +37,7 @@ System requirements
                 $ reboot
 
 
-        ###
-        Disable docker service on boot
-        ###
+        ### Disable docker service on boot
                 $ sudo systemctl disable docker
                 $ sudo systemctl disable docker.service
                 $ sudo systemctl disable docker.socket
@@ -50,16 +46,12 @@ System requirements
                 $ systemctl list-unit-files | grep -i docker
 
 
-        ###
-        Removing all resources
-        ###
+        ### Removing all resources
                 $ docker system prune
                 $ docker system prune --all --force --volumes
 
 
-###
-Install Sail
-###
+### Install Sail
 
 1) In ~/.bashrc file, uncomment or add the following lines:
 
@@ -72,9 +64,7 @@ Install Sail
         alias sail='[ -f sail ] && bash sail || bash ~/projects/sail/bin/sail'
 
 
-###
-VSCode PHP executable Path in docker
-###
+### VSCode PHP executable Path in docker
 
 1) Create a file 'php.sh' to /usr/local/bin
         $ sudo cp ./assets/php.sh /usr/local/bin/php
