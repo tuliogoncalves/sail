@@ -1,3 +1,7 @@
+# Sail
+
+Esse projeto foi baseado no Laravel\Sail e estendido para atender soluções distribuídas (microservices).
+
 ###
 System requirements
 ###
