@@ -4,15 +4,15 @@
 
 2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
     
-     wsl --install
+     `wsl --install`
 
      OR, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
     
-     wsl --install -d kali-linux
+     `wsl --install -d kali-linux`
     
 3) Check WSL version (WSL2 required).
     
-     wsl -l -v
+     `wsl -l -v`
     
 - If the distro is not in version 2, it is necessary to move the distro to version 2. In my example, it would be:
     
@@ -21,7 +21,7 @@
 - Soon after, put the distro as default, to avoid any problems with docker.
     
      wsl --set-default kali-linux
-     
+
 - Inside the distro's terminal (open from the start menu), and update the Ubuntu APT repository.
     
      sudo apt update
