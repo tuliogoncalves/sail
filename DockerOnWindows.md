@@ -1,16 +1,16 @@
 # Install Docker on windows with WSL
 
-- Run prompt or powershell as administrator mode.
+1) Run prompt or powershell as administrator mode.
 
-- This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
+2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
     
      wsl --install
-    
-- Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
+
+     OR, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
     
      wsl --install -d kali-linux
     
-- Check WSL version (WSL2 required).
+3) Check WSL version (WSL2 required).
     
      wsl -l -v
     
@@ -83,12 +83,11 @@ sudo chmod +x /usr/local/bin/php
     
      **OBS**: The **first code** opens the file and the second is the lines that must be added or uncommented.
     
-
-     nano ~/.bashrc
+          nano ~/.bashrc
 
           if [ -f ~/.bash_aliases ]; then
                . ~/.bash_aliases
-               fi
+          fi
 
 - Once that's done, create a file ~/.bash_aliases and add your aliases:
 
