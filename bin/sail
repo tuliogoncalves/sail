@@ -188,7 +188,7 @@ ARGS=()
 
 if [ "$APP_ENV" == "local" ]; then
     if [ -f ./sail-docker-compose-local.yml ]; then
-        ARGS+=(-f sail-docker-compose-local.yml)
+        ARGS+=(-f sail-docker-compose.yml)
     fi
 fi
 
@@ -274,7 +274,7 @@ elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     ARGS+=("app bash $@")
 
 # Initiate a root user Bash shell within the application container...
-elif [ "$1" == "root-shell" ] || [ "$1" == "root-bash" ]; then
+elif [ "$1" == "shell-root" ] || [ "$1" == "bash-root" ]; then
     shift 1
 
     ARGS+=(exec -u root)
@@ -287,7 +287,6 @@ elif [ "$1" == "redis" ] ; then
 
     cd $SCRIPTPATH/..
 
-    #ARGS+="-f $SCRIPTPATH/../docker-compose.yml"
     ARGS+=(exec)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(redis redis-cli)
