@@ -1,5 +1,7 @@
 # Install Docker on windows with WSL
+
 - Run prompt or powershell as administrator mode.
+
 - This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
     
      wsl --install
