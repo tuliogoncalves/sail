@@ -4,15 +4,12 @@ This project was based on Laravel\Sail and extended to serve distributed solutio
 
 ## System requirements
 
-Install Docker engine
-        and 
-Install Doker compose
+1) Install Docker engine and Docker compose
 
         https://docs.docker.com/engine/install/
 
-
-### When need access private repositories
-        $ docker login
+        When need access private repositories
+                $ docker login
 
 
 ### If you want to run docker as non-root user then you need to add it to the docker group.
