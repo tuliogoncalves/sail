@@ -16,9 +16,13 @@ services:
                 user: '${WWWUSER}'
                 uid: '${WWWGROUP}'
             context: .
-            dockerfile: ./docker/php/Dockerfile
+            dockerfile: ./sail_client/php/Dockerfile
         image: ${APP_PROJECT_NAME}-php:local
         restart: unless-stopped
+        volumes:
+            - ./:/var/www
+            - ./sail_client/supervisor/supervisord.php.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./sail_client/php/php.ini:/usr/local/etc/php/conf.d/php.ini
         networks:
             - app
             - proxy
@@ -28,9 +32,35 @@ services:
         container_name: ${APP_PROJECT_NAME}-nginx
         image: nginx:stable-alpine
         restart: unless-stopped
+        ports:
+            - "80:80"
+        volumes: 
+            - ./:/var/www
+            - ./sail_client/nginx/local/:/etc/nginx/conf.d/
         networks: 
             - app
             - proxy
+
+    # # nodeJs
+    # nodejs:
+    #     container_name: ${APP_PROJECT_NAME}-nodejs
+    #     build:
+    #         args:
+    #             user: '${WWWUSER}'
+    #             uid: '${WWWGROUP}'
+    #         context: ./docker/node
+    #         dockerfile: Dockerfile
+    #     image: nodejs
+    #     tty: true
+    #     restart: unless-stopped
+    #     working_dir: /var/www/
+    #     volumes:
+    #         - ./:/var/www
+    #     depends_on: 
+    #         - app
+    #     networks: 
+    #         - app
+    #         - proxy
 
     # # queue
     # queue:
@@ -40,8 +70,8 @@ services:
     #     working_dir: /var/www/
     #     volumes:
     #         - ./:/var/www
-    #         - ./docker/supervisord/supervisord.queue.conf:/etc/supervisor/conf.d/supervisord.conf
-    #         - ./docker/assets/php.ini:/usr/local/etc/php/conf.d/scripptage.ini
+    #         - ./sail_client/supervisord/supervisord.queue.conf:/etc/supervisor/conf.d/supervisord.conf
+    #         - ./sail_client/assets/php.ini:/usr/local/etc/php/conf.d/scripptage.ini
     #     depends_on: 
     #         - app
     #         - redis

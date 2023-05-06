@@ -111,12 +111,11 @@ if [ -f ./.env ]; then
 fi
 
 # Define environment variables...
-export APP_PORT=${APP_PORT:-80}
-export DB_PORT=${DB_PORT:-3306}
 export WWWUSER=${WWWUSER:-"sail"}
 export WWWGROUP=${WWWGROUP:-$(id -g)}
+export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scripptage"}
 
-APP_ENV=${APP_ENV:-""}
+APP_ENV=${APP_ENV:-"local"}
 
 export SAIL_FILES=${SAIL_FILES:-""}
 export SAIL_SHARE_DASHBOARD=${SAIL_SHARE_DASHBOARD:-4040}
@@ -188,16 +187,14 @@ fi
 ARGS=()
 
 if [ "$APP_ENV" == "local" ]; then
-    ARGS+=(-f docker-compose.yml)
-    if [ -f ./docker-compose-local.yml ]; then
-        ARGS+=(-f docker-compose-local.yml)
+    if [ -f ./sail-docker-compose-local.yml ]; then
+        ARGS+=(-f sail-docker-compose-local.yml)
     fi
 fi
 
 if [ "$APP_ENV" == "production" ]; then
-    ARGS+=(-f docker-compose.yml)
-    if [ -f ./docker-compose-prod.yml ]; then
-        ARGS+=(-f docker-compose-prod.yml)
+    if [ -f ./sail-docker-compose-prod.yml ]; then
+        ARGS+=(-f sail-docker-compose-prod.yml)
     fi
 fi
 
@@ -213,13 +210,13 @@ if [ "$1" == "composer" ]; then
 elif [ "$1" == "proxy-up" ]; then
     shift 1
 
-    ARGS="-f docker-compose-proxy.yml up -d"
+    ARGS="-f sail-docker-compose-proxy.yml up -d"
 
 # Proxy Down container...
 elif [ "$1" == "proxy-down" ]; then
     shift 1
 
-    ARGS="-f docker-compose-proxy.yml down"
+    ARGS="-f sail-docker-compose-proxy.yml down"
 
 # Proxy Artisan commands to the "artisan" binary on the application container...
 elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
@@ -313,9 +310,9 @@ else
     ARGS+=("$@")
 fi
 
-echo
-echo "${DOCKER_COMPOSE[@]}" "${ARGS[@]}"
-echo
+# echo
+# echo "${DOCKER_COMPOSE[@]}" "${ARGS[@]}"
+# echo
 
 # Run Docker Compose with the defined arguments...
 ${DOCKER_COMPOSE[@]} ${ARGS[@]}

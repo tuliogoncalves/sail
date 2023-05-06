@@ -1,5 +1,5 @@
-FROM php:7.4-fpm as php
-LABEL stage=local
+FROM php:8.1-fpm as php
+LABEL stage=production
 
 # Arguments defined in docker-compose.yml
 ARG user
@@ -37,37 +37,17 @@ RUN pecl install -o -f redis \
     &&  docker-php-ext-enable redis
 
 # Install star-container
-COPY ./docker/supervisor/start-container /usr/local/bin/start-container
+COPY ./sail_client/supervisor/start-container /usr/local/bin/start-container
 RUN chmod +x /usr/local/bin/start-container
 
 # Copy php config install
-COPY ./docker/php/php.ini /usr/local/etc/php/conf.d/php.ini
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+COPY ./sail_client/php/php.prod.ini /usr/local/etc/php/conf.d/php.ini
+COPY ./sail_client/supervisor/supervisord.php.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Set working directory
 WORKDIR /var/www
 
-# Expose port 9000
-EXPOSE 9000
-
-USER $user
-
-ENTRYPOINT ["start-container"]
-
-
-
-# ------------------------------------------------------------
-# Target to production server
-# ------------------------------------------------------------
-FROM php as production
-LABEL stage=production
-
-# Copia as configurações do PHP
-USER root
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
-COPY ./docker/php/php.prod.ini /usr/local/etc/php/conf.d/php.ini
-COPY ./docker/supervisor/supervisord.php.conf /etc/supervisor/conf.d/supervisord.conf
-
-# COPY --chown=www-data:www-data . ./
 COPY --chown=$user:$user . ./
 
 # RUN --mount=type=cache,target=/tmp/cache composer install \
@@ -83,4 +63,9 @@ COPY --chown=$user:$user . ./
 RUN /usr/bin/composer install
 RUN /usr/bin/composer dump-autoload --optimize --classmap-authoritative
 
+# Expose port 9000
+EXPOSE 9000
+
 USER $user
+
+ENTRYPOINT ["start-container"]

@@ -65,7 +65,7 @@ Install Sail
 
 2) create the ~/.bash_aliases file and add the yours alias.
 
-        alias sail='[ -f sail ] && bash sail || bash ~/projects/docker/bin/sail'
+        alias sail='[ -f sail ] && bash sail || bash ~/projects/sail/bin/sail'
 
 
 ###
