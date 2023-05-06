@@ -11,15 +11,11 @@ This project was based on Laravel\Sail and extended to serve distributed solutio
                 https://docs.docker.com/engine/install/
         
 
-        ###
-        When need access private repositories
-        ###
+        ### When need access private repositories
                 $ docker login
 
 
-        ###
-        If you want to run docker as non-root user then you need to add it to the docker group.
-        ###
+        ### If you want to run docker as non-root user then you need to add it to the docker group.
 
         a) Create the docker group if it does not exist
                 $ sudo groupadd docker
@@ -51,7 +47,7 @@ This project was based on Laravel\Sail and extended to serve distributed solutio
                 $ docker system prune --all --force --volumes
 
 
-### Install Sail
+## Install Sail
 
 1) In ~/.bashrc file, uncomment or add the following lines:
 
@@ -64,7 +60,7 @@ This project was based on Laravel\Sail and extended to serve distributed solutio
         alias sail='[ -f sail ] && bash sail || bash ~/projects/sail/bin/sail'
 
 
-### VSCode PHP executable Path in docker
+## VSCode PHP executable Path in docker
 
 1) Create a file 'php.sh' to /usr/local/bin
         $ sudo cp ./assets/php.sh /usr/local/bin/php
