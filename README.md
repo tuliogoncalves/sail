@@ -8,14 +8,14 @@ This project was based on Laravel\Sail and extended to serve distributed awsd so
 
 ### On Windows, prepare WSL
 
-1) Run prompt or powershell as administrator mode.
-2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
+        1) Run prompt or powershell as administrator mode.
+        2) This command will enable the features needed to run WSL and install the Ubuntu Linux distribution.
 
-`wsl --install`
+        `wsl --install`
 
-Or, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
+        Or, Command to install a specific distro. (“kali-linux”, would be the chosen distro. You can change it to, for example, “Ubuntu-20.04” and it will install that distro.)
 
-`wsl --install -d kali-linux`
+        `wsl --install -d kali-linux`
 
 3) Check WSL version (WSL2 required).
 
@@ -43,7 +43,7 @@ Then install docker in your Linux environment with the command:
 
 ### When need access private repositories
 
-    `docker login`
+    docker login
 
 ### If you want to run docker as non-root user then you need to add it to the docker group.
 
