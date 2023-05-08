@@ -128,6 +128,36 @@ export SAIL_SHARE_SUBDOMAIN=${SAIL_SHARE_SUBDOMAIN:-""}
 PWD="$(pwd)"
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
+function copy_client {
+    # copy client_sail folder, if not exists
+    echo
+    if [ -d sail_client ]; then
+        echo -e "${GREEN}Not copied. sail_client exists!"
+    else
+        cp -r $SCRIPTPATH/../client/sail_client .
+        echo -e "${GREEN}sail_client copied!"
+    fi
+
+    # copy sail-docker-compose.yml, if not exists
+    echo
+    if [ -f sail-docker-compose.yml ]; then
+        echo -e "${GREEN}Not copied. sail-docker-compose.yml exists!"
+    else
+        cp $SCRIPTPATH/../client/sail-docker-compose.yml .
+        echo -e "${GREEN}sail-docker-compose.yml copied!"
+    fi
+
+    # copy sail-docker-compose-prod.yml, if not exists
+    echo
+    if [ -f sail-docker-compose-prod.yml ]; then
+        echo -e "${GREEN}Not copied. sail-docker-compose-prod.yml exists!"
+    else
+        cp $SCRIPTPATH/../client/sail-docker-compose-prod.yml .
+        echo -e "${GREEN}sail-docker-compose-prod.yml copied!"
+    fi
+
+    echo
+}
 
 if [ $# -gt 0 ]; then
     if [ "$1" == "on" ]; then
@@ -154,10 +184,10 @@ if [ $# -gt 0 ]; then
         git clone --single-branch --branch $2 https://github.com/laravel/laravel.git $3
 
         if [ -d "$3" ]; then
-            cp -r $SCRIPTPATH/../client/sail_client $3
-            cp $SCRIPTPATH/../client/*.* $3
-
             cd $3
+
+            copy_client
+
             rm -rf .git
             rm -rf .github
 
@@ -176,35 +206,33 @@ if [ $# -gt 0 ]; then
     fi
 
     if [ "$1" == "copy-client" ]; then
-        # copy client_sail folder, if not exists
-        echo
-        if [ -d sail_client ]; then
-            echo -e "${GREEN}Not copied. sail_client exists!"
-        else
-            cp -r $SCRIPTPATH/../client/sail_client .
-            echo -e "${GREEN}sail_client copied!"
-        fi
-
-        # copy sail-docker-compose.yml, if not exists
-        echo
-        if [ -f sail-docker-compose.yml ]; then
-            echo -e "${GREEN}Not copied. sail-docker-compose.yml exists!"
-        else
-            cp $SCRIPTPATH/../client/sail-docker-compose.yml .
-            echo -e "${GREEN}sail-docker-compose.yml copied!"
-        fi
-
-        # copy sail-docker-compose-prod.yml, if not exists
-        echo
-        if [ -f sail-docker-compose-prod.yml ]; then
-            echo -e "${GREEN}Not copied. sail-docker-compose-prod.yml exists!"
-        else
-            cp $SCRIPTPATH/../client/sail-docker-compose-prod.yml .
-            echo -e "${GREEN}sail-docker-compose-prod.yml copied!"
-        fi
-
-        echo
+        copy_client
         exit 0
+    fi
+
+    if [ "$1" == "create-starter" ]; then
+        git clone --single-branch --branch main https://github.com/tuliogoncalves/starter-with-vuejs.git $2
+
+        if [ -d "$2" ]; then
+            cd $2
+
+            copy_client
+
+            rm -rf .git
+            rm -rf .github
+
+            echo
+            echo -e "${GREEN}New starter created!"
+            echo
+
+            exit 0
+        fi
+
+        echo
+        echo "${YELLOW}Use:${NC}"
+        echo "  ${NC}sail create-starter {project-name}"
+        echo
+        exit 1
     fi
 fi
 
