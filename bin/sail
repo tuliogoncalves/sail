@@ -50,8 +50,8 @@ function display_help {
     echo "  ${GREEN}sail off${NC}       Finish the docker service's"
     echo
     echo "${YELLOW}Sail's containers Commands:${NC}"
-    echo "  ${GREEN}sail server:up${NC}         Start the sail container's"
-    echo "  ${GREEN}sail server:down${NC}       Finish the sail container's"
+    echo "  ${GREEN}sail sail:up${NC}         Start the sail container's"
+    echo "  ${GREEN}sail sail:down${NC}       Finish the sail container's"
     echo
     echo "${YELLOW}Create projects:${NC}"
     echo "  ${GREEN}sail create:back {laravel-version} {project-name} ${NC}  Create new laravel projects"
@@ -60,11 +60,12 @@ function display_help {
     echo "  ${GREEN}sail copy:client ${NC}                                   Copy Sail client into existing project "
     echo
     echo "${YELLOW}docker-compose Commands:${NC}"
-    echo "  ${GREEN}sail up${NC}        Start the application"
-    echo "  ${GREEN}sail up -d${NC}     Start the application in the background"
-    echo "  ${GREEN}sail stop${NC}      Stop the application"
-    echo "  ${GREEN}sail restart${NC}   Restart the application"
-    echo "  ${GREEN}sail ps${NC}        Display the status of all containers"
+    echo "  ${GREEN}sail <docker-compose commands>${NC}     Define and run multi-container applications with Docker"
+    echo "  Examples:"
+    echo "    ${GREEN}sail up -d${NC}     Start the application in the background"
+    echo "    ${GREEN}sail stop${NC}      Stop the application"
+    echo "    ${GREEN}sail restart${NC}   Restart the application"
+    echo "    ${GREEN}sail ps${NC}        Display the status of all containers"
     echo
     echo "${YELLOW}Bash shell Context:${NC}"
     echo "  ${GREEN}sail shell${NC}        Initiate a Bash shell within the application container"
