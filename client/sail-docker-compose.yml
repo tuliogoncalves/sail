@@ -39,14 +39,13 @@ services:
             - app
             - proxy
 
-    # # nodeJs
     # nodejs:
     #     container_name: ${APP_PROJECT_NAME}-nodejs
     #     build:
     #         args:
     #             user: '${WWWUSER}'
     #             uid: '${WWWGROUP}'
-    #         context: ./docker/node
+    #         context: ./sail_client/node
     #         dockerfile: Dockerfile
     #     image: nodejs
     #     tty: true

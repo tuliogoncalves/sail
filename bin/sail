@@ -40,18 +40,24 @@ function display_help {
     echo
     echo "Scriptpage Sail"
     echo
-    echo "${YELLOW}Usage:${NC}" >&2
-    echo "  sail COMMAND [options] [arguments]"
+    echo "${YELLOW}Usage:${NC}"
+    echo "  ${GREEN}sail COMMAND [options] [arguments]"
+    echo "     ${NC}or"
+    echo "  ${GREEN}sail <docker-compose commands>"
     echo
-    echo "${YELLOW}docker Commands in the background:${NC}"
+    echo "${YELLOW}Docker services Commands:${NC}"
     echo "  ${GREEN}sail on${NC}        Start the docker service's"
     echo "  ${GREEN}sail off${NC}       Finish the docker service's"
     echo
-    echo "${YELLOW}create projects:${NC}"
-    echo "  ${GREEN}sail create-back {laravel-version} {project-name} ${NC}  Create new laravel projects"
-    echo "  ${GREEN}sail create-front {nodejs-version} {project-name} ${NC}  Create new nodeJS projects"
-    echo "  ${GREEN}sail create-starter {project-name} ${NC}                 Create new starter projects"
-    echo "  ${GREEN}sail copy-client ${NC}                                   Copy Sail client to project existing"
+    echo "${YELLOW}Sail's containers Commands:${NC}"
+    echo "  ${GREEN}sail server:up${NC}         Start the sail container's"
+    echo "  ${GREEN}sail server:down${NC}       Finish the sail container's"
+    echo
+    echo "${YELLOW}Create projects:${NC}"
+    echo "  ${GREEN}sail create:back {laravel-version} {project-name} ${NC}  Create new laravel projects"
+    echo "  ${GREEN}sail create:front {nodejs-version} {project-name} ${NC}  Create new nodeJS projects"
+    echo "  ${GREEN}sail create:starter {project-name} ${NC}                 Create new starter projects"
+    echo "  ${GREEN}sail copy:client ${NC}                                   Copy Sail client into existing project "
     echo
     echo "${YELLOW}docker-compose Commands:${NC}"
     echo "  ${GREEN}sail up${NC}        Start the application"
@@ -111,6 +117,7 @@ fi
 if [ -f ./.env ]; then
     source ./.env
 fi
+
 
 # Define environment variables...
 export WWWUSER=${WWWUSER:-"sail"}
@@ -180,7 +187,8 @@ if [ $# -gt 0 ]; then
         exit 0
     fi
 
-    if [ "$1" == "create-back" ]; then
+    # create:back
+    if [ "$1" == "create:back" ]; then
         git clone --single-branch --branch $2 https://github.com/laravel/laravel.git $3
 
         if [ -d "$3" ]; then
@@ -200,17 +208,30 @@ if [ $# -gt 0 ]; then
 
         echo
         echo "${YELLOW}Use:${NC}"
-        echo "  ${NC}sail create-back {laravel-version} {project-name}"
+        echo "  ${NC}sail create:back {laravel-version} {project-name}"
         echo
         exit 1
     fi
 
-    if [ "$1" == "copy-client" ]; then
+    # copy:client
+    if [ "$1" == "copy:client" ]; then
         copy_client
         exit 0
     fi
 
-    if [ "$1" == "create-starter" ]; then
+    # create:front
+    if [ "$1" == "create:front" ]; then
+        echo
+        echo "${YELLOW}Not Implemented yet"
+        echo
+        echo "${YELLOW}Use:"
+        echo "  ${NC}sail create:front {node-version} {project-name}"
+        echo
+        exit 1
+    fi
+
+    # create:starter
+    if [ "$1" == "create:starter" ]; then
         git clone --single-branch --branch main https://github.com/tuliogoncalves/starter-with-vuejs.git $2
 
         if [ -d "$2" ]; then
@@ -230,7 +251,7 @@ if [ $# -gt 0 ]; then
 
         echo
         echo "${YELLOW}Use:${NC}"
-        echo "  ${NC}sail create-starter {project-name}"
+        echo "  ${NC}sail create:starter {project-name}"
         echo
         exit 1
     fi
@@ -273,6 +294,22 @@ if [ "$1" == "composer" ]; then
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=("app composer $@")
+
+# Sail Server Up container's...
+elif [ "$1" == "sail:up" ]; then
+    shift 1
+
+    cd $SCRIPTPATH/..
+
+    ARGS=("-f sail-docker-compose.yml up -d")
+
+# Sail Server Down container's...
+elif [ "$1" == "sail:down" ]; then
+    shift 1
+
+    cd $SCRIPTPATH/..
+
+    ARGS=("-f sail-docker-compose.yml down")
 
 # Proxy Up container...
 elif [ "$1" == "proxy-up" ]; then
@@ -370,7 +407,10 @@ elif [ "$1" == "share" ]; then
         --subdomain="$SAIL_SHARE_SUBDOMAIN" \
         "$@"
 
-    exit 0
+    exit # echo
+# echo "${DOCKER_COMPOSE[@]}" "${ARGS[@]}"
+# echo
+0
 
 # Pass unknown commands to the "docker-compose" binary...
 else
