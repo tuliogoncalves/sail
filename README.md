@@ -1,6 +1,8 @@
-# Sail
+# Scrioptpage Sail
 
-This project was based on Laravel\Sail and extended to serve distributed awsd solutions (microservices).
+> **Note:** This repository contains a component of the Scriptpage framework. If you want to build an application using Laravel and Scriptpage with VueJS, you need to know [Scriptpage Starter ](https://github.com/tuliogoncalves/starter-with-vuejs).
+
+This project was based on Laravel\Sail and extended to run multi-container applications with Docker.
 
 ##### System requirements
 
