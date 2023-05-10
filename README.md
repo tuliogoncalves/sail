@@ -1,4 +1,4 @@
-# Scrioptpage Sail
+# Scriptpage Sail
 
 > **Note:** This repository contains a component of the Scriptpage framework. If you want to build an application using Laravel and Scriptpage with VueJS, you need to know [Scriptpage Starter ](https://github.com/tuliogoncalves/starter-with-vuejs).
 
