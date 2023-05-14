@@ -52,6 +52,9 @@ function display_help {
     echo "${YELLOW}Sail's containers Commands:${NC}"
     echo "  ${GREEN}sail sail:up${NC}         Start the sail container's"
     echo "  ${GREEN}sail sail:down${NC}       Finish the sail container's"
+    echo "  ${GREEN}sail sail:start${NC}      Start the sail container's"
+    echo "  ${GREEN}sail sail:stop${NC}       Stop the sail container's"
+    echo "  ${GREEN}sail sail:restart${NC}    Restart the sail container's"
     echo
     echo "${YELLOW}Create projects:${NC}"
     echo "  ${GREEN}sail create:back {laravel-version} {project-name} ${NC}  Create new laravel projects"
@@ -311,6 +314,30 @@ elif [ "$1" == "sail:down" ]; then
     cd $SCRIPTPATH/..
 
     ARGS=("-f sail-docker-compose.yml down")
+
+# Sail Server Start container's...
+elif [ "$1" == "sail:start" ]; then
+    shift 1
+
+    cd $SCRIPTPATH/..
+
+    ARGS=("-f sail-docker-compose.yml start")
+
+# Sail Server Stop container's...
+elif [ "$1" == "sail:stop" ]; then
+    shift 1
+
+    cd $SCRIPTPATH/..
+
+    ARGS=("-f sail-docker-compose.yml stop")
+
+# Sail Server Restart container's...
+elif [ "$1" == "sail:restart" ]; then
+    shift 1
+
+    cd $SCRIPTPATH/..
+
+    ARGS=("-f sail-docker-compose.yml restart")
 
 # Proxy Up container...
 elif [ "$1" == "proxy-up" ]; then
