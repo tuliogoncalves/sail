@@ -146,6 +146,7 @@ function copy_client {
         echo -e "${GREEN}Not copied. sail_client exists!"
     else
         cp -r $SCRIPTPATH/../client/sail_client .
+        echo -e "\n/sail_client/logs" >> .gitignore
         echo -e "\n/sail_client" >> .gitignore
         echo -e "${GREEN}sail_client copied!"
     fi
