@@ -117,24 +117,27 @@ else
     display_help
 fi
 
-# Source the ".env" file so Laravel's environment variables are available...
-if [ -f ./.env ]; then
-    source ./.env
-fi
+function define_environment {
+    # Source the ".env" file so Laravel's environment variables are available...
+    if [ -f ./.env ]; then
+        source ./.env
+    fi
 
+   # Define environment variables...
+    export WWWUSER=${WWWUSER:-"sail"}
+    export WWWGROUP=${WWWGROUP:-$(id -g)}
+    export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scriptage"}
 
-# Define environment variables...
-export WWWUSER=${WWWUSER:-"sail"}
-export WWWGROUP=${WWWGROUP:-$(id -g)}
-export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scripptage"}
+    APP_ENV=${APP_ENV:-"local"}
 
-APP_ENV=${APP_ENV:-"local"}
+    export SAIL_FILES=${SAIL_FILES:-""}
+    export SAIL_SHARE_DASHBOARD=${SAIL_SHARE_DASHBOARD:-4040}
+    export SAIL_SHARE_SERVER_HOST=${SAIL_SHARE_SERVER_HOST:-"laravel-sail.site"}
+    export SAIL_SHARE_SERVER_PORT=${SAIL_SHARE_SERVER_PORT:-8080}
+    export SAIL_SHARE_SUBDOMAIN=${SAIL_SHARE_SUBDOMAIN:-""}
+}
 
-export SAIL_FILES=${SAIL_FILES:-""}
-export SAIL_SHARE_DASHBOARD=${SAIL_SHARE_DASHBOARD:-4040}
-export SAIL_SHARE_SERVER_HOST=${SAIL_SHARE_SERVER_HOST:-"laravel-sail.site"}
-export SAIL_SHARE_SERVER_PORT=${SAIL_SHARE_SERVER_PORT:-8080}
-export SAIL_SHARE_SUBDOMAIN=${SAIL_SHARE_SUBDOMAIN:-""}
+define_environment
 
 PWD="$(pwd)"
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
@@ -304,42 +307,52 @@ if [ "$1" == "composer" ]; then
     ARGS+=("app composer $@")
 
 # Sail Server Up container's...
-elif [ "$1" == "sail:up" ]; then
-    shift 1
+elif [[ "$1" == *":up"* ]]; then
 
-    cd $SCRIPTPATH/..
+    project="$(awk -F':' '{print $1}' <<< $1)"
+    cd $SCRIPTPATH/../../$project
+
+    define_environment
 
     ARGS=("-f sail-docker-compose.yml up -d")
 
 # Sail Server Down container's...
-elif [ "$1" == "sail:down" ]; then
-    shift 1
+elif [[ "$1" == *":down"* ]]; then
 
-    cd $SCRIPTPATH/..
+    project="$(awk -F':' '{print $1}' <<< $1)"
+    cd $SCRIPTPATH/../../$project
+
+    define_environment
 
     ARGS=("-f sail-docker-compose.yml down")
 
 # Sail Server Start container's...
-elif [ "$1" == "sail:start" ]; then
-    shift 1
+elif [[ "$1" == *":start"* ]]; then
 
-    cd $SCRIPTPATH/..
+    project="$(awk -F':' '{print $1}' <<< $1)"
+    cd $SCRIPTPATH/../../$project
+
+    define_environment
 
     ARGS=("-f sail-docker-compose.yml start")
 
 # Sail Server Stop container's...
-elif [ "$1" == "sail:stop" ]; then
-    shift 1
+elif [[ "$1" == *":stop"* ]]; then
 
-    cd $SCRIPTPATH/..
+    project="$(awk -F':' '{print $1}' <<< $1)"
+    cd $SCRIPTPATH/../../$project
+
+    define_environment
 
     ARGS=("-f sail-docker-compose.yml stop")
 
 # Sail Server Restart container's...
-elif [ "$1" == "sail:restart" ]; then
-    shift 1
+elif [[ "$1" == *":restart"* ]]; then
 
-    cd $SCRIPTPATH/..
+    project="$(awk -F':' '{print $1}' <<< $1)"
+    cd $SCRIPTPATH/../../$project
+
+    define_environment
 
     ARGS=("-f sail-docker-compose.yml restart")
 
@@ -439,10 +452,7 @@ elif [ "$1" == "share" ]; then
         --subdomain="$SAIL_SHARE_SUBDOMAIN" \
         "$@"
 
-    exit # echo
-# echo "${DOCKER_COMPOSE[@]}" "${ARGS[@]}"
-# echo
-0
+    exit 0
 
 # Pass unknown commands to the "docker-compose" binary...
 else

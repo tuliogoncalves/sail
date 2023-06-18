@@ -97,3 +97,10 @@ e) Reboot if still got error
    $ sudo cp ./assets/php.sh /usr/local/bin/php
 2) Make it executable:
    $ sudo chmod +x /usr/local/bin/php
+
+## Enable compose with docker
+
+1) Create a file 'composer.sh' to /usr/local/composer
+   $ sudo cp ./assets/composer.sh /usr/local/bin/composer
+2) Make it executable:
+   $ sudo chmod +x /usr/local/bin/composer
