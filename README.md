@@ -104,3 +104,10 @@ e) Reboot if still got error
    $ sudo cp ./assets/composer.sh /usr/local/bin/composer
 2) Make it executable:
    $ sudo chmod +x /usr/local/bin/composer
+
+## Enable npm with docker
+
+1) Create a file 'composer.sh' to /usr/local/composer
+   $ sudo cp ./assets/npm.sh /usr/local/bin/npm
+2) Make it executable:
+   $ sudo chmod +x /usr/local/bin/npm
