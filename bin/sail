@@ -1,10 +1,5 @@
 #!/usr/bin/env bash
 
-if ! [ -x "$(command -v docker-compose)" ]; then
-    shopt -s expand_aliases
-    alias docker-compose='docker compose'
-fi
-
 UNAMEOUT="$(uname -s)"
 
 WHITE='\033[1;37m'
@@ -34,6 +29,12 @@ if test -t 1; then
         NC="$(tput sgr0)"
     fi
 fi
+
+# Define local variables...
+ARGS=(-f sail-docker-compose.yml)
+PWD="$(pwd)"
+SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+PROJECT="$(awk -F':' '{print $1}' <<< $1)"
 
 # Function that prints the available commands...
 function display_help {
@@ -111,15 +112,6 @@ function validate_sudo {
     fi
 }
 
-# Proxy the "help" command...
-if [ $# -gt 0 ]; then
-    if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
-        display_help
-    fi
-else
-    display_help
-fi
-
 function define_environment {
     # Source the ".env" file so Laravel's environment variables are available...
     if [ -f ./.env ]; then
@@ -138,12 +130,13 @@ function define_environment {
     export SAIL_SHARE_SERVER_HOST=${SAIL_SHARE_SERVER_HOST:-"laravel-sail.site"}
     export SAIL_SHARE_SERVER_PORT=${SAIL_SHARE_SERVER_PORT:-8080}
     export SAIL_SHARE_SUBDOMAIN=${SAIL_SHARE_SUBDOMAIN:-""}
+
+    if [ "$APP_ENV" == "production" ] || [ "$APP_ENV" == "prod" ]; then
+        if [ -f ./sail-docker-compose-prod.yml ]; then
+            ARGS=(-f sail-docker-compose-prod.yml)
+        fi
+    fi
 }
-
-define_environment
-
-PWD="$(pwd)"
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 
 function copy_client {
     # copy client_sail folder, if not exists
@@ -180,93 +173,118 @@ function copy_client {
     echo
 }
 
+function cd_to_project {
+    pathproject=$SCRIPTPATH/../../$PROJECT
+    if [ -d "$pathproject" ]; then
+        cd $SCRIPTPATH/../../$PROJECT
+    else
+        echo
+        echo "${YELLOW}Project not exists: ${NC}$PROJECT"
+        echo
+        echo "  ${NC}verify: $SCRIPTPATH/../../$PROJECT"
+        echo
+        exit 1
+    fi
+}
+
+# Proxy the "help" command...
 if [ $# -gt 0 ]; then
-    if [ "$1" == "on" ]; then
-        validate_sudo
-        sudo systemctl start docker.socket
-        sudo systemctl start docker
-        echo
-        echo -e "${GREEN}Docker started"
-        echo
-        exit 0
+    if [ "$1" == "help" ] || [ "$1" == "-h" ] || [ "$1" == "-help" ] || [ "$1" == "--help" ]; then
+        display_help
     fi
+else
+    display_help
+fi
 
-    if [ "$1" == "off" ]; then
-        validate_sudo
-        sudo systemctl stop docker.socket
-        sudo systemctl stop docker
-        echo
-        echo -e "${GREEN}Docker stoped"
-        echo
-        exit 0
-    fi
+if [ "$1" == "on" ]; then
+    validate_sudo
+    sudo systemctl start docker.socket
+    sudo systemctl start docker
+    echo
+    echo -e "${GREEN}Docker started"
+    echo
+    exit 0
 
-    # create:back
-    if [ "$1" == "create:back" ]; then
-        git clone --single-branch --branch $2 https://github.com/laravel/laravel.git $3
+elif [ "$1" == "off" ]; then
+    validate_sudo
+    sudo systemctl stop docker.socket
+    sudo systemctl stop docker
+    echo
+    echo -e "${GREEN}Docker stoped"
+    echo
+    exit 0
 
-        if [ -d "$3" ]; then
-            cd $3
+# create:back
+elif [ "$1" == "create:back" ]; then
+    git clone --single-branch --branch $2 https://github.com/laravel/laravel.git $3
 
-            copy_client
+    if [ -d "$3" ]; then
+        cd $3
 
-            rm -rf .git
-            rm -rf .github
-
-            echo
-            echo -e "${GREEN}New back created!"
-            echo
-
-            exit 0
-        fi
-
-        echo
-        echo "${YELLOW}Use:${NC}"
-        echo "  ${NC}sail create:back {laravel-version} {project-name}"
-        echo
-        exit 1
-    fi
-
-    # copy:client
-    if [ "$1" == "copy:client" ]; then
         copy_client
+
+        rm -rf .git
+        rm -rf .github
+
+        echo
+        echo -e "${GREEN}New back created!"
+        echo
+
         exit 0
     fi
 
-    # create:front
-    if [ "$1" == "create:front" ]; then
+    echo
+    echo "${YELLOW}Use:${NC}"
+    echo "  ${NC}sail create:back {laravel-version} {project-name}"
+    echo
+    exit 1
+
+# copy:client
+elif [ "$1" == "copy:client" ]; then
+    copy_client
+    exit 0
+
+# create:front
+elif [ "$1" == "create:front" ]; then
+    echo
+    echo "${YELLOW}Not Implemented yet"
+    echo
+    echo "${YELLOW}Use:"
+    echo "  ${NC}sail create:front {node-version} {project-name}"
+    echo
+    exit 1
+
+# create:starter
+elif [ "$1" == "create:starter" ]; then
+    git clone --single-branch --branch main https://github.com/tuliogoncalves/starter-with-vuejs.git $2
+
+    if [ -d "$2" ]; then
+        cd $2
+
+        copy_client
+
+        rm -rf .git
+        rm -rf .github
+
         echo
-        echo "${YELLOW}Not Implemented yet"
+        echo -e "${GREEN}New starter created!"
         echo
-        echo "${YELLOW}Use:"
-        echo "  ${NC}sail create:front {node-version} {project-name}"
-        echo
-        exit 1
+
+        exit 0
     fi
 
-    # create:starter
-    if [ "$1" == "create:starter" ]; then
-        git clone --single-branch --branch main https://github.com/tuliogoncalves/starter-with-vuejs.git $2
+    echo
+    echo "${YELLOW}Use:${NC}"
+    echo "  ${NC}sail create:starter {project-name}"
+    echo
+    exit 1
+fi
 
-        if [ -d "$2" ]; then
-            cd $2
-
-            copy_client
-
-            rm -rf .git
-            rm -rf .github
-
-            echo
-            echo -e "${GREEN}New starter created!"
-            echo
-
-            exit 0
-        fi
-
-        echo
-        echo "${YELLOW}Use:${NC}"
-        echo "  ${NC}sail create:starter {project-name}"
-        echo
+# Check docker service
+if [ -z "$SAIL_SKIP_CHECKS" ]; then
+    # Ensure that Docker is running...
+    if ! docker info > /dev/null 2>&1; then
+        echo "${BOLD}Docker is not running.${NC}" >&2
         exit 1
     fi
 fi
@@ -279,97 +297,60 @@ else
     DOCKER_COMPOSE=(docker-compose)
 fi
 
-if [ -z "$SAIL_SKIP_CHECKS" ]; then
-    # Ensure that Docker is running...
-    if ! docker info > /dev/null 2>&1; then
-        echo "${BOLD}Docker is not running.${NC}" >&2
-        exit 1
-    fi
-fi
-
-ARGS=()
-
-if [ "$APP_ENV" == "local" ]; then
-    if [ -f ./sail-docker-compose.yml ]; then
-        ARGS+=(-f sail-docker-compose.yml)
-    fi
-fi
-
-if [ "$APP_ENV" == "production" ]; then
-    if [ -f ./sail-docker-compose-prod.yml ]; then
-        ARGS+=(-f sail-docker-compose-prod.yml)
-    fi
-fi
+define_environment
 
 # Proxy Composer commands to the "composer" binary on the application container...
 if [ "$1" == "composer" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=("app composer $@")
+    ARGS+=(app composer $@)
 
-# Sail Server Up container's...
+# Up command to the project container's...
 elif [[ "$1" == *":up"* ]]; then
-
-    project="$(awk -F':' '{print $1}' <<< $1)"
-    cd $SCRIPTPATH/../../$project
-
+    cd_to_project
+    shift 1
     define_environment
+    ARGS+=(up -d)
 
-    ARGS=("-f sail-docker-compose.yml up -d")
-
-# Sail Server Down container's...
+# Down command to the project container's...
 elif [[ "$1" == *":down"* ]]; then
-
-    project="$(awk -F':' '{print $1}' <<< $1)"
-    cd $SCRIPTPATH/../../$project
-
+    cd_to_project
+    shift 1
     define_environment
+    ARGS+=(down)
 
-    ARGS=("-f sail-docker-compose.yml down")
-
-# Sail Server Start container's...
+# Start command to the project container's...
 elif [[ "$1" == *":start"* ]]; then
-
-    project="$(awk -F':' '{print $1}' <<< $1)"
-    cd $SCRIPTPATH/../../$project
-
+    cd_to_project
+    shift 1
     define_environment
+    ARGS+=(start)
 
-    ARGS=("-f sail-docker-compose.yml start")
-
-# Sail Server Stop container's...
+# Stop command to the project container's...
 elif [[ "$1" == *":stop"* ]]; then
-
-    project="$(awk -F':' '{print $1}' <<< $1)"
-    cd $SCRIPTPATH/../../$project
-
+    cd_to_project
+    shift 1
     define_environment
 
-    ARGS=("-f sail-docker-compose.yml stop")
+    ARGS+=(stop)
 
-# Sail Server Restart container's...
+# Restart command to the project container's...
 elif [[ "$1" == *":restart"* ]]; then
-
-    project="$(awk -F':' '{print $1}' <<< $1)"
-    cd $SCRIPTPATH/../../$project
-
+    cd_to_project
+    shift 1
     define_environment
-
-    ARGS=("-f sail-docker-compose.yml restart")
+    ARGS+=(restart)
 
 # Proxy Up container...
 elif [ "$1" == "proxy-up" ]; then
     shift 1
-
-    ARGS="-f sail-docker-compose-proxy.yml up -d"
+    ARGS=(-f sail-docker-compose-proxy.yml up -d)
 
 # Proxy Down container...
 elif [ "$1" == "proxy-down" ]; then
     shift 1
-
-    ARGS="-f sail-docker-compose-proxy.yml down"
+    ARGS=(-f sail-docker-compose-proxy.yml down)
 
 # Proxy Artisan commands to the "artisan" binary on the application container...
 elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
@@ -381,31 +362,27 @@ elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
 # Proxy the "phpunit" command to "php vendor/bin/phpunit"...
 elif [ "$1" == "phpunit" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=("app php vendor/bin/phpunit $@")
+    ARGS+=(app php vendor/bin/phpunit $@)
 
 # Proxy Node commands to the "node" binary on the application container...
 elif [ "$1" == "node" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(nodejs node "$@")
+    ARGS+=(nodejs node $@)
 
 # Proxy NPM commands to the "npm" binary on the application container...
 elif [ "$1" == "npm" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(nodejs npm "$@")
+    ARGS+=(nodejs npm $@)
 
 # Proxy NPX commands to the "npx" binary on the application container...
 elif [ "$1" == "npx" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npx "$@")
@@ -413,7 +390,6 @@ elif [ "$1" == "npx" ]; then
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
@@ -421,7 +397,6 @@ elif [ "$1" == "yarn" ]; then
 # Initiate a Bash shell within the application container...
 elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     shift 1
-
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=("app bash $@")
@@ -429,7 +404,6 @@ elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
 # Initiate a root user Bash shell within the application container...
 elif [ "$1" == "shell-root" ] || [ "$1" == "bash-root" ]; then
     shift 1
-
     ARGS+=(exec -u root)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=("app bash $@")
@@ -437,9 +411,7 @@ elif [ "$1" == "shell-root" ] || [ "$1" == "bash-root" ]; then
 # Initiate a Redis CLI terminal session within the "redis" container...
 elif [ "$1" == "redis" ] ; then
     shift 1
-
     cd $SCRIPTPATH/..
-
     ARGS+=(exec)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(redis redis-cli)
@@ -447,14 +419,12 @@ elif [ "$1" == "redis" ] ; then
 # Share the site...
 elif [ "$1" == "share" ]; then
     shift 1
-
     docker run --init --rm -p $SAIL_SHARE_DASHBOARD:4040 -t beyondcodegmbh/expose-server:latest share http://host.docker.internal:"$APP_PORT" \
         --server-host="$SAIL_SHARE_SERVER_HOST" \
         --server-port="$SAIL_SHARE_SERVER_PORT" \
         --auth="$SAIL_SHARE_TOKEN" \
         --subdomain="$SAIL_SHARE_SUBDOMAIN" \
         "$@"
-
     exit 0
 
 # Pass unknown commands to the "docker-compose" binary...
