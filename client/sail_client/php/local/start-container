@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+if [ ! -z "$WWWUSER" ]; then
+    usermod -u $WWWUSER sail
+fi
+
+set -e
+
+cp ./sail_client/php/local/env.local .env
+
+php artisan optimize
+
+echo "-----------------------"
+echo "-----------------------"
+echo "INSTALAÇÃO FINALIZADA."
+echo "-----------------------"
+echo "-----------------------"
+
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

@@ -15,13 +15,13 @@ services:
                 user: '${WWWUSER}'
                 uid: '${WWWGROUP}'
             context: .
-            dockerfile: ./sail_client/php/Dockerfile
+            dockerfile: ./sail_client/php/Dockerfile_local
         image: ${APP_PROJECT_NAME}-php:local
         restart: unless-stopped
         volumes:
             - ./:/var/www
             - ./sail_client/supervisor/supervisord.php.conf:/etc/supervisor/conf.d/supervisord.conf
-            - ./sail_client/php/php.ini:/usr/local/etc/php/conf.d/php.ini
+            - ./sail_client/php/local/php.local.ini:/usr/local/etc/php/conf.d/php.ini
         networks:
             - app
             - proxy

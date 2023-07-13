@@ -31,7 +31,7 @@ if test -t 1; then
 fi
 
 # Define local variables...
-ARGS=(-f sail-docker-compose.yml)
+ARGS=(-f sail-docker-compose-local.yml)
 PWD="$(pwd)"
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
@@ -114,8 +114,8 @@ function validate_sudo {
 
 function define_environment {
     # Source the ".env" file so Laravel's environment variables are available...
-    if [ -f ./.env ]; then
-        source ./.env
+    if [ -f ./env.sail/env ]; then
+        source ./env.sail/env
     fi
 
    # Define environment variables...
