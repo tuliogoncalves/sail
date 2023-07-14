@@ -50,6 +50,8 @@ services:
     #     image: nodejs
     #     tty: true
     #     restart: unless-stopped
+    #     ports:
+    #         - "80:5173"
     #     working_dir: /var/www/
     #     volumes:
     #         - ./:/var/www

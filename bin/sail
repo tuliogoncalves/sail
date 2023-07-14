@@ -152,12 +152,12 @@ function copy_client {
 
     # copy sail-docker-compose.yml, if not exists
     echo
-    if [ -f sail-docker-compose.yml ]; then
-        echo -e "${GREEN}Not copied. sail-docker-compose.yml exists!"
+    if [ -f sail-docker-compose-local.yml ]; then
+        echo -e "${YELLOW}Not copied. sail-docker-compose-local.yml exists!"
     else
-        cp $SCRIPTPATH/../client/sail-docker-compose.yml .
-        echo -e "sail-docker-compose.yml" >> .gitignore
-        echo -e "${GREEN}sail-docker-compose.yml copied!"
+        cp $SCRIPTPATH/../client/sail-docker-compose-local.yml .
+        echo -e "sail-docker-compose-local.yml" >> .gitignore
+        echo -e "${GREEN}sail-docker-compose-local.yml copied!"
     fi
 
     # copy sail-docker-compose-prod.yml, if not exists
