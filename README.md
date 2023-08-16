@@ -109,7 +109,7 @@ e) Reboot if still got error
 
 ## Enable npm with docker
 
-1) Create a file 'composer.sh' to /usr/local/composer
+1) Create a file 'npm.sh' to /usr/local/npm
    $ sudo cp ./assets/npm.sh /usr/local/bin/npm
 2) Make it executable:
    $ sudo chmod +x /usr/local/bin/npm

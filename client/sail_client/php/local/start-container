@@ -8,7 +8,17 @@ set -e
 
 cp ./sail_client/php/local/env.local .env
 
-php artisan optimize
+cd storage
+mkdir -p logs
+mkdir -p framework
+mkdir -p framework/cache
+mkdir -p framework/cache/data
+mkdir -p framework/sessions
+mkdir -p framework/testing
+mkdir -p framework/views
+cd ..
+
+# php artisan optimize
 
 echo "-----------------------"
 echo "-----------------------"
