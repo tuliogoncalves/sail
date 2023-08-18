@@ -48,9 +48,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
+
 # Create system user to run Node Commands
 RUN useradd -G www-data,root -u $uid -d /home/$user $user
-RUN mkdir -p /home/$user && \
-    chown -R $user:$user /home/$user
+RUN mkdir -p /home/$user
+# RUN chown -R $user:$user /home/$user
+RUN chmod 777 /home/$user
 
 USER $user
