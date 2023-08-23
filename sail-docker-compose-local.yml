@@ -52,21 +52,21 @@ services:
   #   networks:
   #     - proxy
 
-# SQL Server (Express)
-# docker run -d 
-#   -p 1433:1433
-#   --name srv-sqlserver
-#   --hostname srv-sqlserver
-#   --network siafic_net
-#   --restart always
-#   --ip 10.5.0.250
-#   -v /opt/sql-server:/var/opt/mssql/data
-#   -e "ACCEPT_EULA=Y"
-#   -e "MSSQL_SA_PASSWORD=#1qaz2wsx!"
-#   -e "MSSQL_PID=Express" 
-#   mcr.microsoft.com/mssql/server:2019-latest
-#
-##   docker network connect siafic-convenio srv-sqlserver
+  # SQL Server
+  # sqlserver:
+  #   image: mcr.microsoft.com/mssql/server:2019-latest
+  #   container_name: sqlserver
+  #   restart: unless-stopped
+  #   environment:
+  #       ACCEPT_EULA: 'Y'
+  #       MSSQL_SA_PASSWORD: 'pwd#1234'
+  #       MSSQL_PID: 'Express'
+  #   ports:
+  #     - 1433:1433
+  #   volumes:
+  #     - ./data:/var/opt/mssql/data
+  #   networks:
+  #     - proxy
 
 networks:
   proxy:
