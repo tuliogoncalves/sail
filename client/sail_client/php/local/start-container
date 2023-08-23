@@ -8,8 +8,6 @@ set -e
 
 cp ./sail_client/php/local/env.local .env
 
-php artisan optimize
-
 echo "-----------------------"
 echo "-----------------------"
 echo "INSTALAÇÃO FINALIZADA."
