@@ -1,4 +1,4 @@
-FROM php:8.1-fpm as php_local
+FROM ubuntu:20.04 as php_local
 
 # Arguments defined in docker-compose.yml
 ARG user

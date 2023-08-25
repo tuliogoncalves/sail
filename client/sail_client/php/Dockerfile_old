@@ -1,4 +1,4 @@
-FROM php:7.4-fpm as php_local
+FROM php:8.1-fpm as php_local
 
 # Arguments defined in docker-compose.yml
 ARG user
@@ -19,24 +19,8 @@ RUN apt-get update && apt-get install -y \
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Install Microsoft SQL Server Prerequisites - ODBC
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | tee /etc/apt/trusted.gpg.d/microsoft.asc
-#Debian 11
-RUN curl https://packages.microsoft.com/config/debian/11/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
-
-RUN apt-get update
-RUN ACCEPT_EULA=Y apt-get install -y msodbcsql18
-
-# optional: for bcp and sqlcmd
-RUN ACCEPT_EULA=Y apt-get install -y mssql-tools18
-RUN echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc
-RUN bash ~/.bashrc
-
-# optional: kerberos library for debian-slim distributions
-RUN apt-get install -y libgssapi-krb5-2
-
 # Install PHP extensions
-RUN docker-php-ext-install mbstring exif pdo_mysql gd sockets bcmath soap 
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd sockets
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
