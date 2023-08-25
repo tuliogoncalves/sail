@@ -81,6 +81,16 @@ e) Reboot if still got error
         $ docker system prune
         $ docker system prune --all --force --volumes
 
+### Increase your Docker IP space
+
+Fixing "could not find an available, non-overlapping IPv4 address pool among the defaults to assign to the network"
+
+To explicitly add address space for your containers, an entry needs to be added into /etc/docker/daemon.json
+
+        $ sudo cp ./assets/daemon.json /etc/docker/
+
+This configuration will allow Docker to allocate 172.20.(0-255).0/24 and 172.21.(0-255).0/24, which allows a total of 256 addresses to each network, and a total of 512 networks.
+
 ## Install Sail
 
 1) In ~/.bashrc file, uncomment or add the following lines:
