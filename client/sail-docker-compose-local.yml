@@ -12,8 +12,7 @@ services:
         container_name: ${APP_PROJECT_NAME}-app
         build:
             args:
-                user: '${WWWUSER}'
-                uid: '${WWWGROUP}'
+                WWWGROUP: '${WWWGROUP}'
             context: .
             dockerfile: ./sail_client/php/Dockerfile_local
         image: ${APP_PROJECT_NAME}-php:local

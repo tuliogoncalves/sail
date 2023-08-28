@@ -1,9 +1,8 @@
 FROM ubuntu:20.04
 
 ARG WWWGROUP
+ARG PHP=php7.4
 ARG POSTGRES_VERSION=13
-
-WORKDIR /var/www
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
@@ -15,6 +14,7 @@ RUN apt-get install -y \
     gnupg \
     gosu \
     curl \
+    wget \
     ca-certificates \
     zip \
     unzip \
@@ -26,29 +26,57 @@ RUN apt-get install -y \
     python2 \
     dnsutils 
 
-RUN curl -sS 'https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x14aa40ec0831756756d7f66c4f4ea0aae5267a6c' | gpg --dearmor | tee /usr/share/keyrings/ppa_ondrej_php.gpg > /dev/null \
-    && echo "deb [signed-by=/usr/share/keyrings/ppa_ondrej_php.gpg] https://ppa.launchpadcontent.net/ondrej/php/ubuntu focal main" > /etc/apt/sources.list.d/ppa_ondrej_php.list
+RUN apt update
+RUN apt install -y software-properties-common
+RUN add-apt-repository -y ppa:ondrej/php
 
-RUN apt-get update \
-    && apt-get install -y \
-        php7.4 php7.4-cli php7.4-dev \
-        php-pgsql php-sqlite3 php-gd \
-        php-curl php-memcached \
-        php-imap php-mysql php-mbstring \
-        php-xml php-zip php-bcmath php-soap \
-        php-intl php-readline php-pcov \
-        php-msgpack php-igbinary php-ldap \
-        php-redis php-xdebug 
+RUN apt update 
+RUN apt install -y \
+    $PHP $PHP-fpm \
+    $PHP-cli $PHP-dev \
+    $PHP-zip $PHP-xdebug \
+    $PHP-memcached \
+    $PHP-bz2 $PHP-imap $PHP-gd \
+    $PHP-mbstring $PHP-intl $PHP-xml $PHP-bcmath $PHP-pcov \
+    $PHP-curl $PHP-soap $PHP-ldap \
+    $PHP-readline $PHP-msgpack $PHP-igbinary \
+    $PHP-redis \
+    $PHP-mysql $PHP-pgsql $PHP-sqlite3
 
-RUN apt-get update \
-    && apt-get install -y \
-    && apt-get install -y mysql-client \
-    && apt-get install -y postgresql-client-$POSTGRES_VERSION \
-    && apt-get -y autoremove \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Install postgresql repository
+RUN curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/pgdg.gpg >/dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list
 
-RUN setcap "cap_net_bind_service=+ep" /usr/bin/php7.4
+# Install database clients
+RUN apt-get update 
+RUN apt-get install -y mysql-client 
+RUN apt-get install -y postgresql-client-$POSTGRES_VERSION 
 
+# Clear cache
+RUN apt-get -y autoremove 
+RUN apt-get clean 
+RUN rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create system user to run Composer and Artisan Commands
 RUN groupadd --force -g $WWWGROUP sail
 RUN useradd -ms /bin/bash --no-user-group -g $WWWGROUP -u 1337 sail
+
+# Install star-container
+COPY ./sail_client/php/local/start-container /usr/local/bin/start-container
+RUN chmod +x /usr/local/bin/start-container
+
+# Copy php config install
+COPY ./sail_client/php/local/php.local.ini /usr/local/etc/php/conf.d/php.ini
+
+# Set working directory
+WORKDIR /var/www
+
+# Expose port 9000
+EXPOSE 9000
+
+USER sail
+
+ENTRYPOINT ["start-container"]
