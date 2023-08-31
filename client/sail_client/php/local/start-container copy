@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+
+if [ ! -z "$WWWUSER" ]; then
+    usermod -u $WWWUSER sail
+fi
+
+if [ ! -d /.composer ]; then
+    mkdir /.composer
+fi
+
+chmod -R ugo+rw /.composer
+
+cp ./sail_client/php/local/env.local .env
+
+echo "-----------------------"
+echo "-----------------------"
+echo "INSTALAÇÃO FINALIZADA."
+echo "-----------------------"
+echo "-----------------------"
+
+# exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec /usr/sbin/php-fpm7.4 -F -R
