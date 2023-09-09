@@ -11,13 +11,16 @@ services:
     app:
         container_name: ${APP_PROJECT_NAME}-app
         build:
+            args:
+                WWWGROUP: '${WWWGROUP}'
             context: .
-            dockerfile: ./sail_client/php/7.4/Dockerfile_sqlsrv
-        image: ${APP_PROJECT_NAME}-app:dev
+            dockerfile: ./sail_client/php/Dockerfile_local
+        image: ${APP_PROJECT_NAME}-php:local
         restart: unless-stopped
         volumes:
             - ./:/var/www
             - ./sail_client/supervisor/supervisord.php.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./sail_client/php/local/php.local.ini:/usr/local/etc/php/conf.d/php.ini
         networks:
             - app
             - proxy
@@ -56,3 +59,4 @@ services:
     #     networks: 
     #         - app
     #         - proxy
+

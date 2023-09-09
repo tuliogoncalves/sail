@@ -53,20 +53,20 @@ services:
   #     - proxy
 
   # SQL Server
-  # sqlserver:
-  #   image: mcr.microsoft.com/mssql/server:2019-latest
-  #   container_name: sqlserver
-  #   restart: unless-stopped
-  #   environment:
-  #       ACCEPT_EULA: 'Y'
-  #       MSSQL_SA_PASSWORD: 'pwd#1234'
-  #       MSSQL_PID: 'Express'
-  #   ports:
-  #     - 1433:1433
-  #   volumes:
-  #     - ./data:/var/opt/mssql/data
-  #   networks:
-  #     - proxy
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    restart: unless-stopped
+    environment:
+        ACCEPT_EULA: 'Y'
+        MSSQL_SA_PASSWORD: 'pwd#1234'
+        MSSQL_PID: 'Express'
+    ports:
+      - 1433:1433
+    # volumes:
+    #   - ./data:/var/opt/mssql/data
+    networks:
+      - proxy
 
 networks:
   proxy:

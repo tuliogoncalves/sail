@@ -35,6 +35,9 @@ ARGS=(-f sail-docker-compose-local.yml)
 PWD="$(pwd)"
 SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
+DOCKERFILE="$SCRIPTPATH/../builders/Dockerfile_$2"
+DOCKERFILE_NAME="Dockerfile_$2"
+TAG="sail:$2"
 
 # Function that prints the available commands...
 function display_help {
@@ -49,6 +52,9 @@ function display_help {
     echo "${YELLOW}Docker services Commands:${NC}"
     echo "  ${GREEN}sail on${NC}        Start the docker service's"
     echo "  ${GREEN}sail off${NC}       Finish the docker service's"
+    echo
+    echo "${YELLOW}Build sail imagens:${NC}"
+    echo "  ${GREEN}sail make {file} ${NC}  Create sail builder image"
     echo
     echo "${YELLOW}Sail's remote containers Commands:${NC}"
     echo "  ${GREEN}sail {project}:up${NC}         Start the sail container's"
@@ -103,6 +109,24 @@ function display_help {
     exit 1
 }
 
+function builder {
+    if [[ ! -f ${DOCKERFILE} ]]; then
+        echo
+        echo "$DOCKERFILE_NAME not exists in builder folder of sail"
+        echo
+        echo "You must define a valid Dockerfile to build as parameter"
+        echo
+        exit 1
+    fi
+
+    docker buildx build --tag $TAG \
+             --cache-from $TAG  \
+             --build-arg WWWGROUP="$WWWGROUP" \
+             -f $DOCKERFILE \
+             . "$@"
+    exit 0
+}
+
 function validate_sudo {
     if sudo -n true 2>/dev/null; then
         nothing=""
@@ -114,8 +138,8 @@ function validate_sudo {
 
 function define_environment {
     # Source the ".env" file so Laravel's environment variables are available...
-    if [ -f ./env.sail/env ]; then
-        source ./env.sail/env
+    if [ -f .env ]; then
+        source .env
     fi
 
    # Define environment variables...
@@ -426,6 +450,10 @@ elif [ "$1" == "share" ]; then
         --subdomain="$SAIL_SHARE_SUBDOMAIN" \
         "$@"
     exit 0
+
+# Build App
+elif [ "$1" == "make" ]; then
+    builder
 
 # Pass unknown commands to the "docker-compose" binary...
 else

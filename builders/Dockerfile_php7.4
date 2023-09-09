@@ -1,0 +1,125 @@
+FROM ubuntu:20.04
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ARG WWWGROUP
+# ENV FPM_UID 33
+# ENV FPM_GID 33
+
+# Set a default conf for apt-get install
+RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends && \
+    # Install a few required packages
+    apt-get update -qq -y && \
+    apt-get upgrade -qq -y && \
+    apt-get install -qq -y \
+    ca-certificates \
+    # Calling fpm locally
+    libfcgi-bin \
+    # Manipulate iptables rules (example: block smtps)
+    iptables \
+    # php7.4-cgi \
+    # php7.4-dba \
+    # php7.4-dev \
+    # php7.4-enchant \
+    # php7.4-gmp \
+    # php7.4-interbase \
+    # php7.4-odbc \
+    # php7.4-phpdbg \
+    # php7.4-pspell \
+    # php7.4-recode \
+    # php7.4-snmp \
+    # php7.4-sybase \
+    # php7.4-tidy \
+    # php7.4-xsl \
+    php7.4-apcu \
+    php7.4-bcmath \
+    php7.4-bz2 \
+    php7.4-cli \
+    php7.4-curl \
+    php7.4-fpm \
+    php7.4-gd \
+    php7.4-geoip \
+    php7.4-imagick \
+    php7.4-imap \
+    php7.4-intl \
+    php7.4-json \
+    php7.4-ldap \
+    php7.4-mbstring \
+    php7.4-memcache \
+    php7.4-memcached \
+    php7.4-mysql \
+    php7.4-opcache \
+    php7.4-pgsql \
+    php7.4-readline \
+    php7.4-soap \
+    php7.4-sqlite3 \
+    php7.4-ssh2 \
+    php7.4-tideways \
+    php7.4-xml \
+    php7.4-xmlrpc \
+    php7.4-zip && \
+    # Set a symlink to simplify the configuration, as we use a single php version
+    ln -s /etc/php/7.4 /etc/php/current && \
+    # Log to stdout
+    sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
+    echo 'access.log = /proc/self/fd/2' >> /etc/php/current/fpm/php-fpm.conf && \
+    # Create log dir
+    mkdir /var/log/php && \
+    # Install a few extensions with PECL instead of distro ones
+    apt-get install -qq -y \
+    build-essential geoip-bin libgeoip-dev \
+    php-pear php7.4-dev pkg-config zlib1g-dev && \
+    # Install extensions
+    pecl channel-update pecl.php.net && \
+    pecl -q install mongodb redis xdebug-3.1.6 xhprof && \
+    # Activate it
+    echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
+    echo "extension=redis.so" > /etc/php/current/mods-available/redis.ini && \
+    echo "zend_extension=xdebug.so" > /etc/php/current/mods-available/xdebug.ini && \
+    echo "extension=xhprof.so" > /etc/php/current/mods-available/xhprof.ini && \
+    phpenmod mongodb redis ssh2 xdebug xhprof && \
+    # Clean
+    apt-get purge -qq --autoremove -y \
+    build-essential libgeoip-dev \
+    php-pear php7.4-dev pkg-config zlib1g-dev && \
+    apt-get autoremove -qq -y && \
+    apt-get autoclean -qq && \
+    apt-get clean -qq && \
+    # Empty some directories from all files and hidden files
+    rm -rf /build /tmp/* /usr/share/php/docs /usr/share/php/tests && \
+    find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
+
+COPY ../builders/common/php.dev.ini /etc/php/current/cli/conf.d/30-custom-php.ini
+COPY ../builders/common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
+COPY ../builders/common/www.conf /etc/php/current/fpm/pool.d/
+
+# For custom Configuration that comes from outside (via a docker compose mount)
+RUN mkdir /etc/php/current/fpm/user-conf.d && \
+    echo "; Default empty file" > /etc/php/current/fpm/user-conf.d/example.conf && \
+    # Create home for www-data
+    mkdir /home/www-data && \
+    chown www-data:www-data /home/www-data && \
+    usermod -d /home/www-data www-data && \
+    mkdir -p /run/php && \
+    chown www-data:www-data /run/php
+
+COPY ../builders/scripts/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data -u $WWWGROUP -d /home/sail sail
+RUN mkdir -p /home/sail/.composer && \
+    chown -R sail:sail /home/sail
+
+# Set working directory
+WORKDIR /var/www
+
+# Expose port 9000
+EXPOSE      9000
+
+ENTRYPOINT  ["/docker-entrypoint.sh"]
+
+CMD         ["/usr/sbin/php-fpm7.4", "--allow-to-run-as-root", "-c", "/etc/php/current/fpm", "--nodaemonize"]
