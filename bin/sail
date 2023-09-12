@@ -119,11 +119,15 @@ function builder {
         exit 1
     fi
 
+    cd $SCRIPTPATH/../
+
     docker buildx build --tag $TAG \
              --cache-from $TAG  \
              --build-arg WWWGROUP="$WWWGROUP" \
              -f $DOCKERFILE \
-             . "$@"
+             .
+    cd $PWD
+
     exit 0
 }
 
@@ -147,7 +151,7 @@ function define_environment {
     export WWWGROUP=${WWWGROUP:-$(id -g)}
     export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scriptage"}
 
-    APP_ENV=${APP_ENV:-"local"}
+    export APP_ENV=${APP_ENV:-"local"}
 
     export SAIL_FILES=${SAIL_FILES:-""}
     export SAIL_SHARE_DASHBOARD=${SAIL_SHARE_DASHBOARD:-4040}

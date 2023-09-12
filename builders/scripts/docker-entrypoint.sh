@@ -21,8 +21,8 @@ echo "INSTALAÇÃO FINALIZADA."
 echo "-----------------------"
 echo "-----------------------"
 
-# exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 
-echo "$@"
+echo "aqui"
 
 exec "$@"

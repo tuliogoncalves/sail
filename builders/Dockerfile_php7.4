@@ -7,12 +7,16 @@ ARG WWWGROUP
 # ENV FPM_GID 33
 
 # Set a default conf for apt-get install
-RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends && \
-    # Install a few required packages
-    apt-get update -qq -y && \
-    apt-get upgrade -qq -y && \
-    apt-get install -qq -y \
+RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
+
+# Upgrade system
+RUN apt-get update -qq -y && \
+    apt-get upgrade -qq -y
+
+# Install a few required packages
+RUN apt-get install -qq -y \
     ca-certificates \
+    supervisor \
     # Calling fpm locally
     libfcgi-bin \
     # Manipulate iptables rules (example: block smtps)
@@ -57,29 +61,35 @@ RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-rec
     php7.4-tideways \
     php7.4-xml \
     php7.4-xmlrpc \
-    php7.4-zip && \
-    # Set a symlink to simplify the configuration, as we use a single php version
-    ln -s /etc/php/7.4 /etc/php/current && \
-    # Log to stdout
-    sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
+    php7.4-zip
+
+# Set a symlink to simplify the configuration, as we use a single php version
+RUN ln -s /etc/php/7.4 /etc/php/current
+
+# Log to stdout
+RUN sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
     echo 'access.log = /proc/self/fd/2' >> /etc/php/current/fpm/php-fpm.conf && \
     # Create log dir
-    mkdir /var/log/php && \
-    # Install a few extensions with PECL instead of distro ones
-    apt-get install -qq -y \
+    mkdir /var/log/php
+
+# Install a few extensions with PECL instead of distro ones
+RUN apt-get install -qq -y \
     build-essential geoip-bin libgeoip-dev \
-    php-pear php7.4-dev pkg-config zlib1g-dev && \
-    # Install extensions
-    pecl channel-update pecl.php.net && \
-    pecl -q install mongodb redis xdebug-3.1.6 xhprof && \
-    # Activate it
-    echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
+    php-pear php7.4-dev pkg-config zlib1g-dev
+
+# Install extensions
+RUN pecl channel-update pecl.php.net && \
+    pecl -q install mongodb redis xdebug-3.1.6 xhprof
+
+# Activate it
+RUN echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
     echo "extension=redis.so" > /etc/php/current/mods-available/redis.ini && \
     echo "zend_extension=xdebug.so" > /etc/php/current/mods-available/xdebug.ini && \
     echo "extension=xhprof.so" > /etc/php/current/mods-available/xhprof.ini && \
-    phpenmod mongodb redis ssh2 xdebug xhprof && \
-    # Clean
-    apt-get purge -qq --autoremove -y \
+    phpenmod mongodb redis ssh2 xdebug xhprof
+
+# Clean
+RUN apt-get purge -qq --autoremove -y \
     build-essential libgeoip-dev \
     php-pear php7.4-dev pkg-config zlib1g-dev && \
     apt-get autoremove -qq -y && \
@@ -89,6 +99,7 @@ RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-rec
     rm -rf /build /tmp/* /usr/share/php/docs /usr/share/php/tests && \
     find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
 
+# Copy custom php files
 COPY ../builders/common/php.dev.ini /etc/php/current/cli/conf.d/30-custom-php.ini
 COPY ../builders/common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
 COPY ../builders/common/www.conf /etc/php/current/fpm/pool.d/
@@ -103,6 +114,7 @@ RUN mkdir /etc/php/current/fpm/user-conf.d && \
     mkdir -p /run/php && \
     chown www-data:www-data /run/php
 
+# Prepere entrypoint
 COPY ../builders/scripts/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
@@ -121,5 +133,3 @@ WORKDIR /var/www
 EXPOSE      9000
 
 ENTRYPOINT  ["/docker-entrypoint.sh"]
-
-CMD         ["/usr/sbin/php-fpm7.4", "--allow-to-run-as-root", "-c", "/etc/php/current/fpm", "--nodaemonize"]
