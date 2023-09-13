@@ -1,0 +1,33 @@
+ARG PHP=php7.4
+ARG POSTGRES_VERSION=13
+
+FROM sail:$php as phpPgSql
+
+ARG WWWGROUP
+
+ENV DEBIAN_FRONTEND noninteractive
+ENV TZ=UTC
+
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update && \
+    apt install -y $PHP-pgsql
+
+# Install postgresql repository
+RUN curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/pgdg.gpg >/dev/null \
+    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+
+# Install database clients
+RUN apt-get update 
+RUN apt-get install -y postgresql-client-$POSTGRES_VERSION 
+
+# Remove useless packages/files
+RUN pear clear-cache && \
+    apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.4-dev gcc g++ build-essential && \
+    # Clean
+    apt-get autoremove -qq -y && \
+    apt-get autoclean -qq && \
+    apt-get clean -qq && \
+    # Empty some directories from all files and hidden files
+    rm -rf /build /tmp/* /usr/share/php/docs /usr/share/php/tests && \
+    find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete

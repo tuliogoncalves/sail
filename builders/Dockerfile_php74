@@ -1,10 +1,8 @@
-FROM ubuntu:20.04
+FROM ubuntu:20.04 as php74
 
 ARG DEBIAN_FRONTEND=noninteractive
 
 ARG WWWGROUP
-# ENV FPM_UID 33
-# ENV FPM_GID 33
 
 # Set a default conf for apt-get install
 RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends

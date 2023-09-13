@@ -119,9 +119,11 @@ function builder {
         exit 1
     fi
 
+    define_environment
+
     cd $SCRIPTPATH/../
 
-    docker buildx build --tag $TAG \
+    docker $BUILDER --tag $TAG \
              --cache-from $TAG  \
              --build-arg WWWGROUP="$WWWGROUP" \
              -f $DOCKERFILE \
@@ -147,7 +149,7 @@ function define_environment {
     fi
 
    # Define environment variables...
-    export WWWUSER=${WWWUSER:-"sail"}
+    WWWUSER=${WWWUSER:-"sail"}
     export WWWGROUP=${WWWGROUP:-$(id -g)}
     export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scriptage"}
 

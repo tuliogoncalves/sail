@@ -1,4 +1,4 @@
-FROM sail:node16 as node16
+FROM sail:php74 as php74
 
 ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive

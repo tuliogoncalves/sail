@@ -15,6 +15,8 @@ mkdir -p framework/testing
 mkdir -p framework/views
 cd ..
 
+chmod -R 777 storage bootstrap
+
 echo "-----------------------"
 echo "-----------------------"
 echo "INSTALAÇÃO FINALIZADA."
@@ -22,7 +24,3 @@ echo "-----------------------"
 echo "-----------------------"
 
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
-
-echo "aqui"
-
-exec "$@"

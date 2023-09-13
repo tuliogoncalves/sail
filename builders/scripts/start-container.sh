@@ -1,12 +1,6 @@
 #!/usr/bin/env bash
 
-if [ ! -z "$WWWUSER" ]; then
-    usermod -u $WWWUSER sail
-fi
-
 set -e
-
-cp ./sail_client/php/local/env.local .env
 
 cd storage
 mkdir -p logs
@@ -17,8 +11,6 @@ mkdir -p framework/sessions
 mkdir -p framework/testing
 mkdir -p framework/views
 cd ..
-
-# php artisan optimize
 
 echo "-----------------------"
 echo "-----------------------"

@@ -12,8 +12,8 @@ services:
         container_name: ${APP_PROJECT_NAME}-app
         build:
             context: .
-            dockerfile: ./sail_client/php/7.4/Dockerfile_sqlsrv
-        image: ${APP_PROJECT_NAME}-app:dev
+            dockerfile: ./sail_client/php/Dockerfile
+        image: ${APP_PROJECT_NAME}-app:local
         restart: unless-stopped
         volumes:
             - ./:/var/www
@@ -35,24 +35,21 @@ services:
             - app
             - proxy
 
-    # nodejs:
-    #     container_name: ${APP_PROJECT_NAME}-nodejs
-    #     build:
-    #         args:
-    #             user: '${WWWUSER}'
-    #             uid: '${WWWGROUP}'
-    #         context: ./sail_client/node
-    #         dockerfile: Dockerfile
-    #     image: nodejs
-    #     tty: true
-    #     restart: unless-stopped
-    #     ports:
-    #         - "80:5173"
-    #     working_dir: /var/www/
-    #     volumes:
-    #         - ./:/var/www
-    #     depends_on: 
-    #         - app
-    #     networks: 
-    #         - app
-    #         - proxy
+    nodejs:
+        container_name: ${APP_PROJECT_NAME}-nodejs
+        build:
+            context: .
+            dockerfile: ./sail_client/node/Dockerfile
+        image: ${APP_PROJECT_NAME}-node:local
+        tty: true
+        restart: unless-stopped
+        ports:
+            - "80:5173"
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        depends_on: 
+            - app
+        networks: 
+            - app
+            - proxy
