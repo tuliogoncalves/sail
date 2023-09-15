@@ -37,7 +37,7 @@ RUN pecl install -o -f redis \
 
 # Install star-container
 COPY ../builders/scripts/start-container.sh /start-container.sh
-RUN chmod +x /docker-entrypoint.sh
+RUN chmod +x /start-container.sh
 
 # Copy php config install
 COPY ../builders/common/php.local.ini /usr/local/etc/php/conf.d/php.ini

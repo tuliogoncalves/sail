@@ -119,15 +119,16 @@ function builder {
         exit 1
     fi
 
-    define_environment
-
     cd $SCRIPTPATH/../
+
+    define_environment
 
     docker $BUILDER --tag $TAG \
              --cache-from $TAG  \
              --build-arg WWWGROUP="$WWWGROUP" \
              -f $DOCKERFILE \
-             .
+             . $@
+
     cd $PWD
 
     exit 0
@@ -459,7 +460,8 @@ elif [ "$1" == "share" ]; then
 
 # Build App
 elif [ "$1" == "make" ]; then
-    builder
+    shift 2
+    builder $@
 
 # Pass unknown commands to the "docker-compose" binary...
 else
