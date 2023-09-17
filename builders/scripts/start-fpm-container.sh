@@ -12,10 +12,12 @@ mkdir -p framework/testing
 mkdir -p framework/views
 cd ..
 
-echo "-----------------------"
-echo "-----------------------"
-echo "INSTALAÇÃO FINALIZADA."
-echo "-----------------------"
-echo "-----------------------"
+chmod -R 777 storage bootstrap
+
+echo
+echo "----------------------------"
+echo "--- Entreypoint Finished ---"
+echo "----------------------------"
+echo
 
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

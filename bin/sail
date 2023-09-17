@@ -335,7 +335,7 @@ if [ "$1" == "composer" ]; then
     shift 1
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(app composer $@)
+    ARGS+=(php composer $@)
 
 # Up command to the project container's...
 elif [[ "$1" == *":up"* ]]; then
@@ -388,14 +388,14 @@ elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
     shift 1
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(app php artisan $@)
+    ARGS+=(php php artisan $@)
 
 # Proxy the "phpunit" command to "php vendor/bin/phpunit"...
 elif [ "$1" == "phpunit" ]; then
     shift 1
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(app php vendor/bin/phpunit $@)
+    ARGS+=(php php vendor/bin/phpunit $@)
 
 # Proxy Node commands to the "node" binary on the application container...
 elif [ "$1" == "node" ]; then
@@ -430,14 +430,14 @@ elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     shift 1
     ARGS+=(exec -u $WWWUSER)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=("app bash $@")
+    ARGS+=("php bash $@")
 
 # Initiate a root user Bash shell within the application container...
 elif [ "$1" == "shell-root" ] || [ "$1" == "bash-root" ]; then
     shift 1
     ARGS+=(exec -u root)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=("app bash $@")
+    ARGS+=("php bash $@")
 
 # Initiate a Redis CLI terminal session within the "redis" container...
 elif [ "$1" == "redis" ] ; then

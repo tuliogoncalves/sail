@@ -13,7 +13,7 @@ RUN apt-get update -qq
 
 
 # Remove useless packages/files
-RUN pear clear-cache
+#RUN pear clear-cache
 
 RUN apt-get purge -qq --autoremove -y && \
     # Clean

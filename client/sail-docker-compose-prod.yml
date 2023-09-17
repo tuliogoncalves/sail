@@ -1,12 +1,16 @@
 version: "3.7"
 
+networks:
+  app:
+    name: ${APP_PROJECT_NAME}
+
+  proxy:
+    external: true
+
 services:
-    app:
-        container_name: ${APP_PROJECT_NAME}-app
+    php:
+        container_name: ${APP_PROJECT_NAME}-php
         build:
-            args:
-                user: '${WWWUSER}'
-                uid: '${WWWGROUP}'
             context: .
             dockerfile: ./sail_client/php/Dockerfile_prod
         image: ${APP_PROJECT_NAME}-php:prod
@@ -15,17 +19,5 @@ services:
             - mariadb
             - redis
         networks:
-            - app
-            - proxy
-
-    worker:
-        container_name: ${APP_PROJECT_NAME}-worker
-        image: ${APP_PROJECT_NAME}-php:prod
-        restart: unless-stopped
-        working_dir: /var/www/
-        depends_on: 
-            - mariadb
-            - redis
-        networks: 
             - app
             - proxy

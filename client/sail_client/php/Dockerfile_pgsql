@@ -1,7 +1,7 @@
 ARG PHP=php7.4
 ARG POSTGRES_VERSION=13
 
-FROM sail:$php as phpPgSql
+FROM sail:php74 as phpPgSql
 
 ARG WWWGROUP
 

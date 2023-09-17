@@ -1,5 +1,4 @@
 ARG PHP=php74
-ARG POSTGRES_VERSION=13
 
 FROM sail:$php as phpPROD
 

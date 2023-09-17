@@ -8,7 +8,7 @@ networks:
     external: true
 
 services:
-    app:
+    php:
         container_name: ${APP_PROJECT_NAME}-app
         build:
             context: .
@@ -43,13 +43,11 @@ services:
         image: ${APP_PROJECT_NAME}-node:local
         tty: true
         restart: unless-stopped
-        ports:
-            - "80:5173"
+        # ports:
+        #     - "80:5173"
         working_dir: /var/www/
         volumes:
             - ./:/var/www
-        depends_on: 
-            - app
         networks: 
             - app
             - proxy
