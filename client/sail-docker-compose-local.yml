@@ -9,11 +9,11 @@ networks:
 
 services:
     php:
-        container_name: ${APP_PROJECT_NAME}-app
+        container_name: php
         build:
             context: .
             dockerfile: ./sail_client/php/Dockerfile
-        image: ${APP_PROJECT_NAME}-app:local
+        image: ${APP_PROJECT_NAME}:php
         restart: unless-stopped
         volumes:
             - ./:/var/www
@@ -23,7 +23,7 @@ services:
             - proxy
 
     nginx:
-        container_name: ${APP_PROJECT_NAME}-nginx
+        container_name: nginx
         image: nginx:stable-alpine
         restart: unless-stopped
         ports:
@@ -36,11 +36,11 @@ services:
             - proxy
 
     nodejs:
-        container_name: ${APP_PROJECT_NAME}-nodejs
+        container_name: nodejs
         build:
             context: .
             dockerfile: ./sail_client/node/Dockerfile
-        image: ${APP_PROJECT_NAME}-node:local
+        image: ${APP_PROJECT_NAME}:nodejs
         tty: true
         restart: unless-stopped
         # ports:

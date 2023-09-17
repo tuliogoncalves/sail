@@ -1,4 +1,4 @@
-FROM sail:php74 as php
+FROM sail:php81 as php
 
 ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive
@@ -12,7 +12,7 @@ RUN apt-get update -qq
 # ...
 
 
-# Remove useless packages/files
+# Remove useless packages/files (when, sqlserver Dockerfile)
 #RUN pear clear-cache
 
 RUN apt-get purge -qq --autoremove -y && \
@@ -25,4 +25,5 @@ RUN apt-get purge -qq --autoremove -y && \
 RUN rm -rf /build /tmp/* && \
     find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
 
+# (when, php-fpm Dockerfile)
 #USER sail

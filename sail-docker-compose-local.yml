@@ -58,6 +58,7 @@ services:
       PGPASSWORD: "Psswd#123"
       # POSTGRES_DB: '${DB_DATABASE}'
       # POSTGRES_USER: '${DB_USERNAME}'
+      # Default USER: postgres
       POSTGRES_PASSWORD: "Psswd#123"
     volumes:
       - sail-pgsql:/var/lib/postgresql/data

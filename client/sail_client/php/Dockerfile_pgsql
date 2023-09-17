@@ -1,7 +1,6 @@
-ARG PHP=php7.4
-ARG POSTGRES_VERSION=13
+ARG POSTGRES_VERSION=15
 
-FROM sail:php74 as phpPgSql
+FROM sail:php82 as phpPgSql
 
 ARG WWWGROUP
 
@@ -11,7 +10,8 @@ ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && \
-    apt install -y $PHP-pgsql
+    apt-get install -y \
+        php8.2-pgsql
 
 # Install postgresql repository
 RUN curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/pgdg.gpg >/dev/null \
@@ -22,8 +22,9 @@ RUN apt-get update
 RUN apt-get install -y postgresql-client-$POSTGRES_VERSION 
 
 # Remove useless packages/files
-RUN pear clear-cache && \
-    apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.4-dev gcc g++ build-essential && \
+#RUN pear clear-cache
+
+RUN apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.4-dev gcc g++ build-essential && \
     # Clean
     apt-get autoremove -qq -y && \
     apt-get autoclean -qq && \

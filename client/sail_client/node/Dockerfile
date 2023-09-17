@@ -1,4 +1,4 @@
-FROM sail:node16 as node16
+FROM sail:node18 as node18
 
 ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive
