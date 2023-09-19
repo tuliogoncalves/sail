@@ -31,13 +31,15 @@ if test -t 1; then
 fi
 
 # Define local variables...
+SAILBIN=$(readlink -f "${BASH_SOURCE:-$0}")
+SAILPATH=$(dirname $SAILBIN)
+
 ARGS=(-f sail-docker-compose-local.yml)
 PWD="$(pwd)"
-SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
-DOCKERFILE="$SCRIPTPATH/../builders/Dockerfile_$2"
-DOCKERFILE_NAME="Dockerfile_$2"
-TAG="sail:$2"
+#SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
+="$(realpath .)"
+
 
 # Function that prints the available commands...
 function display_help {
@@ -119,9 +121,14 @@ function builder {
         exit 1
     fi
 
-    cd $SCRIPTPATH/../
 
     define_environment
+
+    cd $SCRIPTPATH/../
+
+    DOCKERFILE="$SCRIPTPATH/../builders/Dockerfile_$2"
+    DOCKERFILE_NAME="Dockerfile_$2"
+    TAG="sail:$2"
 
     docker $BUILDER --tag $TAG \
              --cache-from $TAG  \

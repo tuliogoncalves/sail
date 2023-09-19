@@ -93,6 +93,10 @@ This configuration will allow Docker to allocate 172.20.(0-255).0/24 and 172.21.
 
 ## Install Sail
 
+1) create a symbolic link of sail folder install:
+
+        sudo ln -s ~/projects/sail/bin/sail /usr/local/bin/sail
+
 1) In ~/.bashrc file, uncomment or add the following lines:
 
    if [ -f ~/.bash_aliases ]; then
