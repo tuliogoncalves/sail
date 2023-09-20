@@ -1,6 +1,6 @@
 # Scriptpage Sail
 
-## v2.1
+## v2.2
 
 > **Note:** This repository contains a component of the Scriptpage framework. If you want to build an application using Laravel and Scriptpage with VueJS, you need to know [Scriptpage Starter ](https://github.com/tuliogoncalves/starter-with-vuejs).
 
@@ -37,14 +37,7 @@ Or, Command to install a specific distro. (“kali-linux”, would be the chosen
 
 On windows, inside the distro's terminal (open from the start menu),
 
-update the Ubuntu APT repository.
-
-sudo apt update
-
-Then install docker in your Linux environment with the command:
-
-sudo apt install docker.io -y
-sudo apt install docker-compose
+[Install Docker Engine] https://docs.docker.com/engine/install/
 
 ### When need access private repositories
 
@@ -91,39 +84,16 @@ To explicitly add address space for your containers, an entry needs to be added 
 
 This configuration will allow Docker to allocate 172.20.(0-255).0/24 and 172.21.(0-255).0/24, which allows a total of 256 addresses to each network, and a total of 512 networks.
 
-## Install Sail
+## Install/Uninstall Sail
 
-1) create a symbolic link of sail folder install:
+1) prepere install files:
 
-        sudo ln -s ~/projects/sail/bin/sail /usr/local/bin/sail
+   $ sudo chmod +x install uninstall
 
-1) In ~/.bashrc file, uncomment or add the following lines:
+2) Instaling:
 
-   if [ -f ~/.bash_aliases ]; then
-   . ~/.bash_aliases
-   fi
+   $ sudo ./install
 
-2) create the ~/.bash_aliases file and add the yours alias.
+3) Uninstaling:
 
-   alias sail='[ -f sail ] && bash sail || bash ~/projects/sail/bin/sail'
-
-## VSCode PHP executable Path in docker
-
-1) Create a file 'php.sh' to /usr/local/bin
-   $ sudo cp ./assets/php.sh /usr/local/bin/php
-2) Make it executable:
-   $ sudo chmod +x /usr/local/bin/php
-
-## Enable compose with docker
-
-1) Create a file 'composer.sh' to /usr/local/composer
-   $ sudo cp ./assets/composer.sh /usr/local/bin/composer
-2) Make it executable:
-   $ sudo chmod +x /usr/local/bin/composer
-
-## Enable npm with docker
-
-1) Create a file 'npm.sh' to /usr/local/npm
-   $ sudo cp ./assets/npm.sh /usr/local/bin/npm
-2) Make it executable:
-   $ sudo chmod +x /usr/local/bin/npm
+   $ sudo ./uninstall
