@@ -1,1 +1,2 @@
-bash ~/projects/sail/bin/sail exec ${APP_SERVICE:-"app"} composer $@
+#!/bin/sh
+sail composer $@

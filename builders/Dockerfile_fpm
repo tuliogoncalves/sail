@@ -36,11 +36,11 @@ RUN pecl install -o -f redis \
     &&  docker-php-ext-enable redis
 
 # Install star-container
-COPY ../builders/scripts/start-fpm-container.sh /start-container.sh
+COPY ./scripts/start-fpm-container.sh /start-container.sh
 RUN chmod +x /start-fpm-container.sh
 
 # Copy php config install
-COPY ../builders/common/php.local.ini /usr/local/etc/php/conf.d/php.ini
+COPY ./common/php.local.ini /usr/local/etc/php/conf.d/php.ini
 
 # Set working directory
 WORKDIR /var/www

@@ -89,9 +89,9 @@ RUN apt-get autoremove -qq -y && \
     find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
 
 # Copy custom php files
-COPY ../builders/common/php.dev.ini /etc/php/current/cli/conf.d/30-custom-php.ini
-COPY ../builders/common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
-COPY ../builders/common/www.conf /etc/php/current/fpm/pool.d/
+COPY ./common/php.dev.ini /etc/php/current/cli/conf.d/30-custom-php.ini
+COPY ./common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
+COPY ./common/www.conf /etc/php/current/fpm/pool.d/
 
 # For custom Configuration that comes from outside (via a docker compose mount)
 RUN mkdir /etc/php/current/fpm/user-conf.d && \
@@ -104,7 +104,7 @@ RUN mkdir /etc/php/current/fpm/user-conf.d && \
     chown www-data:www-data /run/php
 
 # Prepere entrypoint
-COPY ../builders/scripts/docker-entrypoint.sh /docker-entrypoint.sh
+COPY ./scripts/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Get latest Composer

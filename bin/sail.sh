@@ -31,14 +31,15 @@ if test -t 1; then
 fi
 
 # Define local variables...
-SAILBIN=$(readlink -f "${BASH_SOURCE:-$0}")
-SAILPATH=$(dirname $SAILBIN)
+FullPath=$(readlink -f "${BASH_SOURCE:-$0}")
+SCRIPTPATH=$(dirname $FullPath)
+
+DOCKERFILE="Dockerfile_$2"
+TAG="sail:$2"
 
 ARGS=(-f sail-docker-compose-local.yml)
 PWD="$(pwd)"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
-#SCRIPTPATH="$( cd -- "$(dirname "$0")" >/dev/null 2>&1 ; pwd -P )"
-="$(realpath .)"
 
 
 # Function that prints the available commands...
@@ -112,23 +113,20 @@ function display_help {
 }
 
 function builder {
+    #Get .env sail
+    cd $SCRIPTPATH/../
+    define_environment
+
+    cd $SCRIPTPATH/../builders
+
     if [[ ! -f ${DOCKERFILE} ]]; then
         echo
-        echo "$DOCKERFILE_NAME not exists in builder folder of sail"
+        echo "$DOCKERFILE not exists in builder folder of sail"
         echo
         echo "You must define a valid Dockerfile to build as parameter"
         echo
         exit 1
     fi
-
-
-    define_environment
-
-    cd $SCRIPTPATH/../
-
-    DOCKERFILE="$SCRIPTPATH/../builders/Dockerfile_$2"
-    DOCKERFILE_NAME="Dockerfile_$2"
-    TAG="sail:$2"
 
     docker $BUILDER --tag $TAG \
              --cache-from $TAG  \
@@ -136,6 +134,7 @@ function builder {
              -f $DOCKERFILE \
              . $@
 
+    #Return origin path
     cd $PWD
 
     exit 0
@@ -157,7 +156,6 @@ function define_environment {
     fi
 
    # Define environment variables...
-    WWWUSER=${WWWUSER:-"sail"}
     export WWWGROUP=${WWWGROUP:-$(id -g)}
     export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scriptage"}
 
@@ -340,9 +338,16 @@ define_environment
 # Proxy Composer commands to the "composer" binary on the application container...
 if [ "$1" == "composer" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php composer $@)
+
+# Up command to the project container's...
+elif [[ "$1" == *"php"* ]]; then
+    shift 1
+    ARGS+=(exec -u sail)
+    [ ! -t 0 ] && ARGS+=(-T)
+    ARGS+=(php php $@)
 
 # Up command to the project container's...
 elif [[ "$1" == *":up"* ]]; then
@@ -393,49 +398,49 @@ elif [ "$1" == "proxy-down" ]; then
 # Proxy Artisan commands to the "artisan" binary on the application container...
 elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php php artisan $@)
 
 # Proxy the "phpunit" command to "php vendor/bin/phpunit"...
 elif [ "$1" == "phpunit" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php php vendor/bin/phpunit $@)
 
 # Proxy Node commands to the "node" binary on the application container...
 elif [ "$1" == "node" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs node $@)
 
 # Proxy NPM commands to the "npm" binary on the application container...
 elif [ "$1" == "npm" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npm $@)
 
 # Proxy NPX commands to the "npx" binary on the application container...
 elif [ "$1" == "npx" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npx "$@")
 
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
 
 # Initiate a Bash shell within the application container...
 elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     shift 1
-    ARGS+=(exec -u $WWWUSER)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=("php bash $@")
 

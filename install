@@ -1,0 +1,24 @@
+#!/bin/sh
+
+fullPath=$(readlink -f "${BASH_SOURCE:-$0}")
+path=$(dirname $fullPath)
+
+# sail
+chmod +x ./bin/sail.sh
+ln -s $path/bin/sail.sh /usr/local/bin/sail
+
+# composer
+cp ./assets/composer.sh /usr/local/bin/composer
+chmod +x /usr/local/bin/composer
+
+# node
+cp ./assets/node.sh /usr/local/bin/node
+chmod +x /usr/local/bin/node
+
+# npm
+cp ./assets/npm.sh /usr/local/bin/npm
+chmod +x /usr/local/bin/npm
+
+# php
+cp ./assets/php.sh /usr/local/bin/php
+chmod +x /usr/local/bin/php

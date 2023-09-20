@@ -1,1 +1,2 @@
-bash ~/projects/sail/bin/sail exec ${APP_SERVICE:-"app"} php $@
+#!/bin/sh
+sail php $@

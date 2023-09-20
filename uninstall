@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# sail
+rm -f /usr/local/bin/sail
+
+# composer
+rm -f /usr/local/bin/composer
+
+# node
+rm -f /usr/local/bin/node
+
+# npm
+rm -f /usr/local/bin/npm
+
+# php
+rm -f /usr/local/bin/php
