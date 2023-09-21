@@ -1,0 +1,42 @@
+FROM sail:php72 as php72_sqlsrv
+
+ARG ACCEPT_EULA=Y
+ARG MS_REMOTE_PACKAGE=https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb
+ARG MS_LOCAL_PACKAGE=/tmp/packages-microsoft-prod.deb
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qq && \
+    apt-get install -qq -y curl gnupg 
+
+RUN curl $MS_REMOTE_PACKAGE --output $MS_LOCAL_PACKAGE && \
+    dpkg -i $MS_LOCAL_PACKAGE
+
+RUN apt-get update -qq && \
+    apt-get install -qq -y \
+    # To keep
+    msodbcsql17 mssql-tools unixodbc php7.2-sybase \
+    # remove later
+    unixodbc-dev php-pear php7.2-dev  \
+    gcc g++ build-essential && \
+    # sqlsrv from PECL
+    pecl channel-update pecl.php.net
+
+# Compile
+RUN pecl -q install sqlsrv-5.8.1 pdo_sqlsrv-5.8.1
+
+# Activate
+RUN echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
+    echo "extension=sqlsrv.so" > /etc/php/current/mods-available/sqlsrv.ini && \
+    phpenmod pdo_sqlsrv sqlsrv
+
+# Remove useless packages / files
+RUN apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.2-dev gcc g++ build-essential && \
+    # I need that to make it work
+    apt-get install -qq -y libssl1.0 && \
+    # Clean
+    apt-get autoremove -qq -y && \
+    apt-get autoclean -qq && \
+    apt-get clean -qq && \
+    # Empty some directories from all files and hidden files
+    rm -rf /build /tmp/* /usr/share/php/docs /usr/share/php/tests && \
+    find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
