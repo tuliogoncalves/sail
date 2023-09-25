@@ -437,6 +437,13 @@ elif [ "$1" == "yarn" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
 
+# Proxy YARN commands to the "yarn" binary on the application container...
+elif [ "$1" == "bun" ]; then
+    shift 1
+    ARGS+=(exec -u sail)
+    [ ! -t 0 ] && ARGS+=(-T)
+    ARGS+=(nodejs bun "$@")
+
 # Initiate a Bash shell within the application container...
 elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
     shift 1

@@ -14,3 +14,13 @@ rm -f /usr/local/bin/npm
 
 # php
 rm -f /usr/local/bin/php
+
+# bun
+rm -f /usr/local/bin/bun
+
+# npx
+rm -f /usr/local/bin/npx
+
+# yarn
+rm -f /usr/local/bin/yarn
+

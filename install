@@ -22,3 +22,15 @@ chmod +x /usr/local/bin/npm
 # php
 cp ./assets/php.sh /usr/local/bin/php
 chmod +x /usr/local/bin/php
+
+# bun
+cp ./assets/bun.sh /usr/local/bin/bun
+chmod +x /usr/local/bin/bun
+
+# npx
+cp ./assets/npx.sh /usr/local/bin/npx
+chmod +x /usr/local/bin/npx
+
+# yarn
+cp ./assets/yarn.sh /usr/local/bin/yarn
+chmod +x /usr/local/bin/yarn

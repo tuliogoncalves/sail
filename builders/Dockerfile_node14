@@ -20,7 +20,11 @@ RUN apt-get update \
         sqlite3 \
         python2 \
         dnsutils \
-        librsvg2-bin
+        librsvg2-bin \
+        # Node.js Dev Tools
+        gcc \
+        g++ \
+        make
 
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o setup_14.sh \
     && sh ./setup_14.sh
