@@ -433,7 +433,7 @@ elif [ "$1" == "npx" ]; then
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u node)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
 
