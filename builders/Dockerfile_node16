@@ -46,7 +46,7 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr
 RUN useradd -G www-data,root -u $WWWGROUP -d /home/sail sail
 RUN mkdir -p /home/sail/.composer && \
     chown -R sail:sail /home/sail && \
-    chmod 777 /home/$user
+    chmod 777 /home/sail
 
 # Set working directory
 WORKDIR /var/www

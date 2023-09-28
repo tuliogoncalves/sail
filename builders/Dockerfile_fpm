@@ -28,7 +28,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN useradd -G www-data -u $WWWGROUP -d /home/sail sail
 RUN mkdir -p /home/sail/.composer && \
     chown -R sail:sail /home/sail && \
-    chmod 777 /home/$user
+    chmod 777 /home/sail
     
 # Install redis
 RUN pecl install -o -f redis \
