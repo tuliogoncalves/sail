@@ -13,6 +13,9 @@ createFile() {
 chmod +x ./bin/sail.sh
 ln -s $path/bin/sail.sh /usr/local/bin/sail
 
+# caddy (proxy)
+createFile caddy
+
 # composer
 createFile composer
 

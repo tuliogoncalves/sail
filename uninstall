@@ -3,6 +3,9 @@
 # sail
 rm -f /usr/local/bin/sail
 
+# caddy (proxy)
+rm -f /usr/local/bin/caddy
+
 # composer
 rm -f /usr/local/bin/composer
 

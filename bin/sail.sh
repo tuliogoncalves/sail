@@ -343,11 +343,38 @@ if [ "$1" == "composer" ]; then
     ARGS+=(php composer $@)
 
 # Up command to the project container's...
-elif [[ "$1" == *"php"* ]]; then
+elif [ "$1" == "php" ]; then
     shift 1
     ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php php $@)
+
+# Up command to the project container's...
+elif [ "$1" == "caddy" ]; then
+    cd $SCRIPTPATH/..
+    shift 1
+    ARGS=(-f sail-docker-compose-proxy.yml)
+    ARGS+=(exec -w /etc/caddy)
+    [ ! -t 0 ] && ARGS+=(-T)
+    ARGS+=(caddy caddy $@)
+
+# Up command to the proxy container's...
+elif [ "$1" == "proxy:reload" ]; then
+    shift 1
+    ARGS=(-f sail-docker-compose-proxy.yml)
+    ARGS+=(exec -w /etc/caddy)
+    [ ! -t 0 ] && ARGS+=(-T)
+    ARGS+=(caddy caddy reload)
+
+# Proxy Up container...
+elif [ "$1" == "proxy:up" ]; then
+    shift 1
+    ARGS=(-f sail-docker-compose-proxy.yml up -d)
+
+# Proxy Down container...
+elif [ "$1" == "proxy:down" ]; then
+    shift 1
+    ARGS=(-f sail-docker-compose-proxy.yml down)
 
 # Up command to the project container's...
 elif [[ "$1" == *":up"* ]]; then
@@ -384,16 +411,6 @@ elif [[ "$1" == *":restart"* ]]; then
     shift 1
     define_environment
     ARGS+=(restart)
-
-# Proxy Up container...
-elif [ "$1" == "proxy-up" ]; then
-    shift 1
-    ARGS=(-f sail-docker-compose-proxy.yml up -d)
-
-# Proxy Down container...
-elif [ "$1" == "proxy-down" ]; then
-    shift 1
-    ARGS=(-f sail-docker-compose-proxy.yml down)
 
 # Proxy Artisan commands to the "artisan" binary on the application container...
 elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then

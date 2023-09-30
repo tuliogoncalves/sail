@@ -2,36 +2,42 @@
 }
 
 (tls) {
-  encode gzip
+	encode gzip
 }
 
 # Cache static files for 60 days
 (static) {
-        @static {
-                file
-                path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.json
-        }
-        header @static Cache-Control max-age=5184000
+	@static {
+		file
+		path *.ico *.css *.js *.gif *.jpg *.jpeg *.png *.svg *.woff *.json
+	}
+	header @static Cache-Control max-age=5184000
 }
 
 (security) {
-   header * {
-    -Server
-    Server "Apache/2"
-    Powered-By "PHP/7.4"
-    # ****** Security - Use in Production ******
-    # Strict-Transport-Security "max-age=30758400"
-    # X-Content-Type-Options            "nosniff"
-    # X-Frame-Options                   "deny"
-    # X-XSS-Protection          "1; mode=block"
-    # Referrer-Policy                   "same-origin"
-    # ****** End Security ******
-    -x-powered-by
-  }
+	header * {
+		-Server
+		Server "Apache/2"
+		Powered-By "nodejs"
+		# ****** Security - Use in Production ******
+		# Strict-Transport-Security "max-age=30758400"
+		# X-Content-Type-Options            "nosniff"
+		# X-Frame-Options                   "deny"
+		# X-XSS-Protection          "1; mode=block"
+		# Referrer-Policy                   "same-origin"
+		# ****** End Security ******
+		-x-powered-by
+	}
 }
 
-workscript.localhost {
-  import security
-  import static
-  reverse_proxy workscript-nginx:80
+admin.back.localhost {
+	reverse_proxy scriptpage.admin.back:80
+}
+
+scriptpage.admin.localhost {
+	reverse_proxy scriptpage.admin.front:5173
+	@ws {
+		header Connection *Upgrade*
+		header Upgrade websocket
+	}
 }

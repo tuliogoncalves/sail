@@ -1,21 +1,26 @@
-version: "3.7"
+version: "3.9"
 
 services:
-
-  # Caddy
   caddy:
-    container_name: caddy
-    image: caddy:2.1.1-alpine
+    container_name: proxy
+    image: caddy
     restart: unless-stopped
     ports:
-      - 80:80
-      - 443:443
-      - 127.0.0.1:2019:2019
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
     volumes:
-      - ./caddy/data:/data
-      - ./caddy/config:/config
-      - ./caddy/logs:/logs
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./caddy/certs:/certs
+      - ./site:/srv
+      - caddy-data:/data
+      - caddy-config:/config
     networks:
       - proxy
+
+networks:
+  proxy:
+    external: true
+    
+volumes:
+  caddy-data:
+  caddy-config:
