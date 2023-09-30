@@ -3,34 +3,33 @@
 fullPath=$(readlink -f "${BASH_SOURCE:-$0}")
 path=$(dirname $fullPath)
 
+createFile() {
+    echo "#!/bin/sh" > /usr/local/bin/$1
+    echo "sail $1 \$@" >> /usr/local/bin/$1
+    chmod +x /usr/local/bin/$1
+}
+
 # sail
 chmod +x ./bin/sail.sh
 ln -s $path/bin/sail.sh /usr/local/bin/sail
 
 # composer
-cp ./assets/composer.sh /usr/local/bin/composer
-chmod +x /usr/local/bin/composer
+createFile composer
 
 # node
-cp ./assets/node.sh /usr/local/bin/node
-chmod +x /usr/local/bin/node
+createFile node
 
 # npm
-cp ./assets/npm.sh /usr/local/bin/npm
-chmod +x /usr/local/bin/npm
+createFile npm
 
 # php
-cp ./assets/php.sh /usr/local/bin/php
-chmod +x /usr/local/bin/php
+createFile php
 
 # bun
-cp ./assets/bun.sh /usr/local/bin/bun
-chmod +x /usr/local/bin/bun
+createFile bun
 
 # npx
-cp ./assets/npx.sh /usr/local/bin/npx
-chmod +x /usr/local/bin/npx
+createFile npx
 
 # yarn
-cp ./assets/yarn.sh /usr/local/bin/yarn
-chmod +x /usr/local/bin/yarn
+createFile yarn
