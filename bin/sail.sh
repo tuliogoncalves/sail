@@ -356,7 +356,7 @@ elif [ "$1" == "caddy" ]; then
     ARGS=(-f sail-docker-compose-proxy.yml)
     ARGS+=(exec -w /etc/caddy)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(caddy caddy $@)
+    ARGS+=(proxy caddy $@)
 
 # Up command to the proxy container's...
 elif [ "$1" == "proxy:reload" ]; then

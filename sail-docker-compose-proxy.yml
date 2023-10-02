@@ -1,26 +1,54 @@
 version: "3.9"
 
+networks:
+  proxy:
+    name: proxy
+    # external: true
+
 services:
-  caddy:
-    container_name: proxy
-    image: caddy
+  # proxy:
+  #   container_name: proxy
+  #   image: caddy:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     - "443:443/udp"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - ./site:/srv
+  #     - caddy-data:/data
+  #     - caddy-config:/config
+  #   networks:
+  #     - proxy
+
+  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
-      - "443:443/udp"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./site:/srv
-      - caddy-data:/data
-      - caddy-config:/config
+      # These ports are in format <host-port>:<container-port>
+      - '80:80' # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81' # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+
+    # Uncomment the next line if you uncomment anything in the section
+    # environment:
+      # Uncomment this if you want to change the location of
+      # the SQLite DB file within the container
+      # DB_SQLITE_FILE: "/data/database.sqlite"
+
+      # Uncomment this if IPv6 is not enabled on your host
+      # DISABLE_IPV6: 'true'
     networks:
       - proxy
 
-networks:
-  proxy:
-    external: true
-    
+    volumes:
+      - proxy-data:/data
+      - proxy-config:/etc/letsencrypt
+
 volumes:
-  caddy-data:
-  caddy-config:
+  proxy-data:
+  proxy-config:
+  

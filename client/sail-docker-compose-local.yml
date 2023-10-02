@@ -5,7 +5,8 @@ networks:
     name: ${APP_PROJECT_NAME}
 
   proxy:
-    external: true
+    name: proxy
+    # external: true
 
 services:
     php:
@@ -24,10 +25,11 @@ services:
 
     nginx:
         container_name: nginx
+        hostname: scriptpage.admin.back
         image: nginx:stable-alpine
         restart: unless-stopped
-        ports:
-            - "80:80"
+        # ports:
+        #     - "80:80"
         volumes: 
             - ./:/var/www
             - ./sail_client/nginx/local/:/etc/nginx/conf.d/
@@ -37,6 +39,7 @@ services:
 
     nodejs:
         container_name: nodejs
+        hostname: scriptpage.admin.front
         build:
             context: .
             dockerfile: ./sail_client/node/Dockerfile
