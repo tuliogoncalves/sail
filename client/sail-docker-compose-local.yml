@@ -25,7 +25,7 @@ services:
 
     nginx:
         container_name: nginx
-        hostname: scriptpage.admin.back
+        hostname: ${APP_PROJECT_NAME}.back
         image: nginx:stable-alpine
         restart: unless-stopped
         # ports:
@@ -39,7 +39,7 @@ services:
 
     nodejs:
         container_name: nodejs
-        hostname: scriptpage.admin.front
+        hostname: ${APP_PROJECT_NAME}.front
         build:
             context: .
             dockerfile: ./sail_client/node/Dockerfile

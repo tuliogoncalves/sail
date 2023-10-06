@@ -5,17 +5,19 @@ set -e
 sed -i 's/^display_errors\s*=.*/display_errors = On/g' /etc/php/current/fpm/conf.d/30-custom-php.ini
 sed -i 's/^max_execution_time\s*=.*/max_execution_time = -1/g' /etc/php/current/fpm/conf.d/30-custom-php.ini
 
-cd storage
-mkdir -p logs
-mkdir -p framework
-mkdir -p framework/cache
-mkdir -p framework/cache/data
-mkdir -p framework/sessions
-mkdir -p framework/testing
-mkdir -p framework/views
-cd ..
+if [ -d storage ]; then
+    cd storage
+    mkdir -p logs
+    mkdir -p framework
+    mkdir -p framework/cache
+    mkdir -p framework/cache/data
+    mkdir -p framework/sessions
+    mkdir -p framework/testing
+    mkdir -p framework/views
+    cd ..
 
-chmod -R 777 storage bootstrap
+    chmod -R 777 storage bootstrap
+fi
 
 echo
 echo "----------------------------"

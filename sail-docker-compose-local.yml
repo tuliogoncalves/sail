@@ -1,5 +1,11 @@
 version: "3.7"
 
+
+networks:
+  proxy:
+    name: proxy
+    # external: true
+
 services:
   mariadb:
     container_name: mariadb
@@ -14,7 +20,7 @@ services:
       # MYSQL_PASSWORD: "Psswd#123"
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes: 
-        - db-mariadb:/var/lib/mysql
+        - mariadb:/var/lib/mysql
     networks: 
       - proxy
     ulimits:
@@ -27,7 +33,7 @@ services:
     container_name: redis
     image: redis:latest
     volumes: 
-      - db-redis:/data
+      - redis:/data
     networks: 
       - proxy
 
@@ -44,7 +50,7 @@ services:
   #     # MYSQL_PASSWORD: '${DB_PASSWORD}'
   #     MYSQL_ALLOW_EMPTY_PASSWORD: 1
   #   volumes:
-  #     - db-mysql:/var/lib/mysql
+  #     - mysql:/var/lib/mysql
   #   networks:
   #     - proxy
 
@@ -60,7 +66,7 @@ services:
   #     # Default USER: postgres
   #     POSTGRES_PASSWORD: "Psswd#123"
   #   volumes:
-  #     - db-pgsql:/var/lib/postgresql/data
+  #     - pgsql:/var/lib/postgresql/data
   #   networks:
   #     - proxy
 
@@ -75,17 +81,13 @@ services:
     ports:
       - 1433:1433
     volumes:
-      - db-sqlserver:/var/opt/mssql
+      - sqlserver:/var/opt/mssql
     networks:
       - proxy
 
-networks:
-  proxy:
-    external: true
-
 volumes:
-  db-redis:
-  db-mysql:
-  db-mariadb:
-  db-pgsql:
-  db-sqlserver:
+  redis:
+  mysql:
+  mariadb:
+  pgsql:
+  sqlserver:

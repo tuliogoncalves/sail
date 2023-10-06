@@ -1,4 +1,4 @@
-FROM sail:php81 as php
+FROM sail:php82 as php
 
 ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive
