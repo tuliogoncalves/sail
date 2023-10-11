@@ -35,9 +35,9 @@ RUN pecl install -o -f redis \
     &&  rm -rf /tmp/pear \
     &&  docker-php-ext-enable redis
 
-# Install star-container
-COPY ./scripts/start-fpm-container.sh /start-container.sh
-RUN chmod +x /start-fpm-container.sh
+# Prepere entrypoint
+COPY ./scripts/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Copy php config install
 COPY ./common/php.local.ini /usr/local/etc/php/conf.d/php.ini
