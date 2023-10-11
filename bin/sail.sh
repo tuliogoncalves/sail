@@ -358,21 +358,15 @@ elif [ "$1" == "caddy" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(proxy caddy $@)
 
-# Up command to the proxy container's...
-elif [ "$1" == "proxy:reload" ]; then
-    shift 1
-    ARGS=(-f sail-docker-compose-proxy.yml)
-    ARGS+=(exec -w /etc/caddy)
-    [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=(caddy caddy reload)
-
 # Proxy Up container...
 elif [ "$1" == "proxy:up" ]; then
+    cd $SCRIPTPATH/..
     shift 1
     ARGS=(-f sail-docker-compose-proxy.yml up -d)
 
 # Proxy Down container...
 elif [ "$1" == "proxy:down" ]; then
+    cd $SCRIPTPATH/..
     shift 1
     ARGS=(-f sail-docker-compose-proxy.yml down)
 
@@ -450,7 +444,7 @@ elif [ "$1" == "npx" ]; then
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1
-    ARGS+=(exec -u node)
+    ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
 

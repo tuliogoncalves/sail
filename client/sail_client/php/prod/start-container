@@ -16,16 +16,16 @@ chmod -R 777 storage bootstrap
 
 php artisan migrate --seed --force
 
-# php artisan jwt:secret
+php artisan jwt:secret
 
 php artisan key:generate --force
 
 php artisan optimize
 
-echo "-----------------------"
-echo "-----------------------"
-echo "INSTALAÇÃO FINALIZADA."
-echo "-----------------------"
-echo "-----------------------"
+echo
+echo "----------------------------"
+echo "--- Entreypoint Finished ---"
+echo "----------------------------"
+echo
 
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
