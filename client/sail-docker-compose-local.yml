@@ -10,7 +10,7 @@ networks:
 
 services:
     php:
-        container_name: php
+        container_name: ${APP_PROJECT_NAME}.php
         build:
             context: .
             dockerfile: ./sail_client/php/Dockerfile
@@ -24,7 +24,7 @@ services:
             - proxy
 
     nginx:
-        container_name: nginx
+        container_name: ${APP_PROJECT_NAME}.nginx
         hostname: ${APP_PROJECT_NAME}.back
         image: nginx:stable-alpine
         restart: unless-stopped
@@ -38,7 +38,7 @@ services:
             - proxy
 
     nodejs:
-        container_name: nodejs
+        container_name: ${APP_PROJECT_NAME}.nodejs
         hostname: ${APP_PROJECT_NAME}.front
         build:
             context: .
