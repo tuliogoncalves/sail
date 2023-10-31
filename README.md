@@ -49,7 +49,7 @@ a) Create the docker group if it does not exist
         $ sudo groupadd docker
 
 b) Add your user to the docker group.
-        $ sudo usermod -aG docker <USER>
+        $ sudo usermod -aG docker $USER
 
 c) Log in to the new docker group (to avoid having to log out / log in again; but if not enough, try to reboot):
         $ newgrp docker
