@@ -29,11 +29,12 @@ RUN apt-get update \
 RUN curl -sL https://deb.nodesource.com/setup_14.x -o setup_14.sh \
     && sh ./setup_14.sh
 
-RUN apt-get update \
-    && apt-get -y install nodejs
+RUN apt-get update 
+RUN apt-get -y install nodejs
+# RUN apt-get -y install npm
 
-RUN npm install -g npm@9 \
-    && npm install -g bun
+RUN npm install -g npm@9 
+RUN npm install -g bun
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null \
     && echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
