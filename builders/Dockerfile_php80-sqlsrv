@@ -4,9 +4,8 @@ ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive
 
 RUN curl -sSLo /etc/apt/trusted.gpg.d/microsoft.asc https://packages.microsoft.com/keys/microsoft.asc && \
-    echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/22.04/prod/ jammy main" > /etc/apt/sources.list.d/mssql.list
-
-RUN apt-get update -qq && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/22.04/prod/ jammy main" > /etc/apt/sources.list.d/mssql.list && \
+    apt-get update -qq && \
     ACCEPT_EULA=Y apt-get install -qq -y \
     # To keep
     mssql-tools unixodbc php8.0-sybase \
@@ -14,22 +13,17 @@ RUN apt-get update -qq && \
     unixodbc-dev php-pear php8.0-dev \
     gcc g++ build-essential && \
     # sqlsrv from PECL
-    pecl channel-update pecl.php.net
-
-# Compile
-RUN pecl -q install sqlsrv pdo_sqlsrv
-
-# Activate
-RUN echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
+    pecl channel-update pecl.php.net && \
+    # Compile
+    pecl -q install sqlsrv pdo_sqlsrv && \
+    # Activate
+    echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
     echo "extension=sqlsrv.so" > /etc/php/current/mods-available/sqlsrv.ini && \
-    phpenmod pdo_sqlsrv sqlsrv
-
-# Remove useless packages / files
-RUN pear clear-cache && \
-    apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php8.0-dev gcc g++ build-essential
-
-# Clean
-RUN apt-get autoremove -qq -y && \
+    phpenmod pdo_sqlsrv sqlsrv && \
+    # Remove useless packages / files
+    pear clear-cache && \
+    # Clean
+    apt-get autoremove -qq -y && \
     apt-get autoclean -qq && \
     apt-get clean -qq && \
     # Empty some directories from all files and hidden files

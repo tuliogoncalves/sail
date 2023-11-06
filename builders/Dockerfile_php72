@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as php72
+FROM ubuntu:18.04 as test72
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -61,35 +61,28 @@ RUN apt-get install -qq -y \
     php-ssh2 \
     php-tideways
 
-    # Set a symlink to simplify the configuration, as we use a single php version
-    RUN ln -s /etc/php/7.2 /etc/php/current
-
-# Log to stdout
-RUN sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
+# Set a symlink to simplify the configuration, as we use a single php version
+RUN ln -s /etc/php/7.2 /etc/php/current && \
+    # Log to stdout
+    sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
     echo 'access.log = /proc/self/fd/2' >> /etc/php/current/fpm/php-fpm.conf && \
     # Create log dir
-    mkdir /var/log/php
-
-# Install a few extensions with PECL instead of distro ones
-RUN apt-get install -qq -y \
-    build-essential geoip-bin libgeoip-dev \
-    php-pear php7.2-dev pkg-config zlib1g-dev
-
-# Install extensions
-RUN mkdir -p /tmp/pear/cache
-RUN pecl channel-update pecl.php.net && \
-    pecl -q install mongodb redis xdebug-3.1.6 xhprof
-
-# Activate it
-RUN echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
+    mkdir /var/log/php && \
+    # Install a few extensions with PECL instead of distro ones
+    apt-get install -qq -y \
+    build-essential \
+    php-pear php7.2-dev pkg-config zlib1g-dev && \
+    pecl channel-update pecl.php.net && \
+    pecl -q install mongodb redis xdebug-3.1.6 xhprof && \
+    # Activate it
+    echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
     echo "extension=redis.so" > /etc/php/current/mods-available/redis.ini && \
     echo "zend_extension=xdebug.so" > /etc/php/current/mods-available/xdebug.ini && \
     echo "extension=xhprof.so" > /etc/php/current/mods-available/xhprof.ini && \
-    phpenmod mongodb redis ssh2 xdebug xhprof
-
-# Clean
-RUN apt-get purge -qq --autoremove -y \
-    build-essential libgeoip-dev \
+    phpenmod mongodb redis xdebug xhprof && \
+    # Clean
+    apt-get purge -qq --autoremove -y \
+    build-essential \
     php-pear php7.2-dev pkg-config zlib1g-dev && \
     apt-get autoremove -qq -y && \
     apt-get autoclean -qq && \

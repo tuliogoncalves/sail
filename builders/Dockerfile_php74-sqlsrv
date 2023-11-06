@@ -3,13 +3,11 @@ FROM sail:php74 as php74_sqlsrv
 ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update -qq
-
-RUN apt-get install -qq -y curl gnupg && \
-    echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql.list && \
-    curl -sS https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-
 RUN apt-get update -qq && \
+    apt-get install -qq -y curl gnupg && \
+    echo "deb [arch=amd64] https://packages.microsoft.com/ubuntu/20.04/prod focal main" > /etc/apt/sources.list.d/mssql.list && \
+    curl -sS https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
+    apt-get update -qq && \
     apt-get install -qq -y -o Dpkg::Options::="--force-confold" \
     # To keep
     mssql-tools unixodbc php7.4-sybase \
@@ -19,15 +17,13 @@ RUN apt-get update -qq && \
     # sqlsrv from PECL
     pecl channel-update pecl.php.net && \
     # Compile
-    pecl -q install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1
-
-# Activate
-RUN echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
+    pecl -q install sqlsrv-5.10.1 pdo_sqlsrv-5.10.1 && \
+    # Activate
+    echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
     echo "extension=sqlsrv.so" > /etc/php/current/mods-available/sqlsrv.ini && \
-    phpenmod pdo_sqlsrv sqlsrv
-
-# Remove useless packages / files
-RUN pear clear-cache && \
+    phpenmod pdo_sqlsrv sqlsrv && \
+    # Remove useless packages / files
+    pear clear-cache && \
     apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.4-dev gcc g++ build-essential && \
     # Clean
     apt-get autoremove -qq -y && \

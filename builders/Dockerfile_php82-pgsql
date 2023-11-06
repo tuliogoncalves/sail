@@ -1,32 +1,27 @@
-ARG POSTGRES_VERSION=15
 
-FROM sail:php82 as phpPgSql
+FROM sail:php82 as php82_pgsql
 
 ARG WWWGROUP
+ARG POSTGRES_VERSION=15
 
-ENV DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && \
-    apt-get install -y \
-        php8.2-pgsql
+    apt-get install -y php8.2-pgsql 
 
 # Install postgresql repository
-RUN curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /usr/share/keyrings/pgdg.gpg >/dev/null \
-    && echo "deb [signed-by=/usr/share/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt focal-pgdg main" > /etc/apt/sources.list.d/pgdg.list
+RUN curl -sS https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | tee /etc/apt/keyrings/pgdg.gpg >/dev/null \
+    && echo "deb [signed-by=/etc/apt/keyrings/pgdg.gpg] http://apt.postgresql.org/pub/repos/apt jammy-pgdg main" > /etc/apt/sources.list.d/pgdg.list 
 
 # Install database clients
 RUN apt-get update 
-RUN apt-get install -y postgresql-client-$POSTGRES_VERSION 
+RUN apt-get install -y postgresql-client-$POSTGRES_VERSION
 
-# Remove useless packages/files
-#RUN pear clear-cache
-
-RUN apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.4-dev gcc g++ build-essential && \
-    # Clean
-    apt-get autoremove -qq -y && \
+# Clean
+RUN apt-get autoremove -qq -y && \
     apt-get autoclean -qq && \
     apt-get clean -qq && \
     # Empty some directories from all files and hidden files

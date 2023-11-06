@@ -1,9 +1,7 @@
-FROM ubuntu:20.04 as node14
+FROM ubuntu:22.04 as node20
 
 ARG WWWGROUP
-
-# Set working directory
-WORKDIR /var/www
+ARG NODE_VERSION=20
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV TZ=UTC
@@ -11,30 +9,32 @@ ENV TZ=UTC
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update \
+    && mkdir -p /etc/apt/keyrings \
     && apt-get install -y \
-        supervisor \
+        gnupg \
         curl \
         ca-certificates \
         zip \
         unzip \
+        git \
+        supervisor \
         sqlite3 \
+        libcap2-bin \
+        libpng-dev \
         python2 \
         dnsutils \
         librsvg2-bin \
-        # Node.js Dev Tools
-        gcc \
-        g++ \
-        make
+        fswatch
 
-RUN curl -sL https://deb.nodesource.com/setup_14.x -o setup_14.sh \
-    && sh ./setup_14.sh
+RUN apt-get update 
+
+RUN curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg \
+    && echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_VERSION.x nodistro main" > /etc/apt/sources.list.d/nodesource.list
 
 RUN apt-get update \
-    && apt-get -y install nodejs \
-    && npm install -g npm
-
-# RUN npm install -g npm@9 \
-# RUN npm install -g bun
+    && apt-get install -y nodejs \
+    && npm install -g npm \
+    && npm install -g bun
 
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr/share/keyrings/yarnkey.gpg >/dev/null \
     && echo "deb [signed-by=/usr/share/keyrings/yarnkey.gpg] https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list \
@@ -46,5 +46,8 @@ RUN useradd -G www-data,root -u $WWWGROUP -d /home/sail sail
 RUN mkdir -p /home/sail/.composer && \
     chown -R sail:sail /home/sail && \
     chmod 777 /home/sail
+
+# Set working directory
+WORKDIR /var/www
 
 USER sail

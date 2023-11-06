@@ -10,10 +10,10 @@ RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-rec
 # Install a few required packages
 RUN apt-get update -qq -y && \
     apt install -qq -y \
-        supervisor \
-        curl \
-        gnupg2 \
-        software-properties-common && \
+    supervisor \
+    curl \
+    gnupg2 \
+    software-properties-common && \
     add-apt-repository ppa:ondrej/php --yes 
 
 # Update, upgrade
@@ -71,17 +71,28 @@ RUN apt-get install -qq -y \
     php8.1-xmlrpc \
     php8.1-zip
 
- # Set a symlink to simplify the configuration, as we use a single php version
-RUN ln -s /etc/php/8.1 /etc/php/current
-
-# Log to stdout
-RUN sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
+# Set a symlink to simplify the configuration, as we use a single php version
+RUN ln -s /etc/php/8.1 /etc/php/current && \
+    # Log to stdout
+    sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
     echo 'access.log = /proc/self/fd/2' >> /etc/php/current/fpm/php-fpm.conf && \
     # Create log dir
-    mkdir /var/log/php
-
-# Clean
-RUN apt-get autoremove -qq -y && \
+    mkdir /var/log/php && \
+    # Install a few extensions with PECL instead of distro ones
+    apt-get install -qq -y \
+    build-essential \
+    php-pear php8.1-dev pkg-config zlib1g-dev && \
+    # Install extensions
+    pecl channel-update pecl.php.net && \
+    pecl -q install xhprof && \
+    # Activate it
+    echo "extension=xhprof.so" > /etc/php/current/mods-available/xhprof.ini && \
+    phpenmod mongodb redis ssh2 xdebug xhprof && \
+    # Clean
+    apt-get purge -qq --autoremove -y \
+    build-essential \
+    php-pear php8.1-dev pkg-config zlib1g-dev && \
+    apt-get autoremove -qq -y && \
     apt-get autoclean -qq && \
     apt-get clean -qq && \
     # Empty some directories from all files and hidden files
