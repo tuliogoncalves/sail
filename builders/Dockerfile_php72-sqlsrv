@@ -6,12 +6,10 @@ ARG MS_LOCAL_PACKAGE=/tmp/packages-microsoft-prod.deb
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update -qq && \
-    apt-get install -qq -y curl gnupg 
-
-RUN curl $MS_REMOTE_PACKAGE --output $MS_LOCAL_PACKAGE && \
-    dpkg -i $MS_LOCAL_PACKAGE
-
-RUN apt-get update -qq && \
+    apt-get install -qq -y curl gnupg && \
+    curl $MS_REMOTE_PACKAGE --output $MS_LOCAL_PACKAGE && \
+    dpkg -i $MS_LOCAL_PACKAGE && \
+    apt-get update -qq && \
     apt-get install -qq -y \
     # To keep
     msodbcsql17 mssql-tools unixodbc php7.2-sybase \
@@ -19,18 +17,15 @@ RUN apt-get update -qq && \
     unixodbc-dev php-pear php7.2-dev  \
     gcc g++ build-essential && \
     # sqlsrv from PECL
-    pecl channel-update pecl.php.net
-
-# Compile
-RUN pecl -q install sqlsrv-5.8.1 pdo_sqlsrv-5.8.1
-
-# Activate
-RUN echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
+    pecl channel-update pecl.php.net && \
+    # Compile
+    pecl -q install sqlsrv-5.8.1 pdo_sqlsrv-5.8.1 && \
+    # Activate
+    echo "extension=pdo_sqlsrv.so" > /etc/php/current/mods-available/pdo_sqlsrv.ini && \
     echo "extension=sqlsrv.so" > /etc/php/current/mods-available/sqlsrv.ini && \
-    phpenmod pdo_sqlsrv sqlsrv
-
-# Remove useless packages / files
-RUN apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.2-dev gcc g++ build-essential && \
+    phpenmod pdo_sqlsrv sqlsrv && \
+    # Remove useless packages / files
+    apt-get purge -qq --autoremove -y curl gnupg unixodbc-dev php-pear php7.2-dev gcc g++ build-essential && \
     # I need that to make it work
     apt-get install -qq -y libssl1.0 && \
     # Clean
