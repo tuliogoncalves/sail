@@ -28,3 +28,11 @@ echo "----------------------------"
 echo
 
 exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
+
+if [ -f /start.sh ]; then
+    echo
+    echo "--- Start custom script ---"
+    echo
+
+    exec /start.sh
+fi

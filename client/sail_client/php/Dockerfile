@@ -7,6 +7,9 @@ USER root
 
 RUN apt-get update -qq
 
+# Prepere custom script
+# COPY ./scripts/start.sh /start.sh
+# RUN chmod +x /start.sh
 
 # Add or Remove packages/files
 # ...
