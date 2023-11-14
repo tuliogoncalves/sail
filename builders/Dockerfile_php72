@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as test72
+FROM ubuntu:18.04 as php72
 
 ARG DEBIAN_FRONTEND=noninteractive
 
