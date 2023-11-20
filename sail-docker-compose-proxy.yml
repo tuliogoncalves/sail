@@ -1,5 +1,7 @@
 version: "3.9"
 
+name: sail-proxy
+
 networks:
   proxy:
     name: proxy
