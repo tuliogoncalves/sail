@@ -457,6 +457,13 @@ elif [ "$1" == "npx" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npx "$@")
 
+# Proxy PNPM commands to the "npx" binary on the application container...
+elif [ "$1" == "pnpm" ]; then
+    shift 1
+    ARGS+=(exec -u sail)
+    [ ! -t 0 ] && ARGS+=(-T)
+    ARGS+=(nodejs pnpm "$@")
+
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1

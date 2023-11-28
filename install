@@ -25,6 +25,9 @@ createFile node
 # npm
 createFile npm
 
+# pnpm
+createFile pnpm
+
 # php
 createFile php
 
