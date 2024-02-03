@@ -35,14 +35,20 @@ services:
       # Add any other Stream port you want to expose
       # - '21:21' # FTP
 
-    # Uncomment the next line if you uncomment anything in the section
     # environment:
-      # Uncomment this if you want to change the location of
-      # the SQLite DB file within the container
-      # DB_SQLITE_FILE: "/data/database.sqlite"
+    #   Uncomment this if you want to change the location of
+    #   the SQLite DB file within the container
+    #   DB_SQLITE_FILE: "/data/database.sqlite"
 
-      # Uncomment this if IPv6 is not enabled on your host
-      # DISABLE_IPV6: 'true'
+    #   Uncomment this if you want to change To MySql database
+    #   DB_MYSQL_HOST: "mariadb"
+    #   DB_MYSQL_PORT: 3306
+    #   DB_MYSQL_USER: "db_user"
+    #   DB_MYSQL_PASSWORD: "Psswd#123"
+    #   DB_MYSQL_NAME: "nginxproxy"
+      
+    # Uncomment this if IPv6 is not enabled on your host
+        # DISABLE_IPV6: 'true'
     networks:
       - proxy
 
