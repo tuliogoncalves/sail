@@ -30,8 +30,8 @@
 	}
 }
 
-admin.back.localhost {
-	reverse_proxy scriptpage.admin.back:80
+sinazure.localhost {
+	reverse_proxy sinazure.back:80
 }
 
 scriptpage.admin.localhost {

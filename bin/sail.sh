@@ -88,10 +88,8 @@ function display_help {
     echo "    ${GREEN}sail ps${NC}        Display the status of all containers"
     echo
     echo "${YELLOW}Bash shell Context:${NC}"
-    echo "  ${GREEN}sail shell${NC}        Initiate a Bash shell within the application container"
-    echo "  ${GREEN}sail root-shell${NC}   Initiate a root user Bash shell within the application container"
-    echo "  ${GREEN}sail bash${NC}         Initiate a Bash shell within the application container"
-    echo "  ${GREEN}sail root-bash${NC}    Initiate a root user Bash shell within the application container"
+    echo "  ${GREEN}sail shell <container> ${NC}       Initiate a Bash shell within <container>"
+    echo "  ${GREEN}sail shell-root <container>${NC}   Initiate a root user Bash shell within <container>"
     echo
     echo "${YELLOW}artisan Commands:${NC}"
     echo "  ${GREEN}sail artisan ...${NC}   Run an Artisan command"
@@ -112,7 +110,11 @@ function display_help {
     echo "${YELLOW}yarn Commands:${NC}"
     echo "  ${GREEN}sail yarn ...${NC}      Run an yarn command"
     echo
-
+    echo "${YELLOW}Exec Commands into specific container:${NC}"
+    echo "  ${GREEN}sail exeec <container> <command> ...${NC}      Run an command into container"
+    echo "  Examples:"
+    echo "    ${GREEN}sail exec nodejs make -v${NC}     Execute make command into container nodejs"
+    echo
     exit 1
 }
 
@@ -457,7 +459,7 @@ elif [ "$1" == "npx" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npx "$@")
 
-# Proxy PNPM commands to the "npx" binary on the application container...
+# Proxy PNPM commands to the "pnpm" binary on the application container...
 elif [ "$1" == "pnpm" ]; then
     shift 1
     ARGS+=(exec -u sail)
@@ -471,26 +473,55 @@ elif [ "$1" == "yarn" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
 
-# Proxy YARN commands to the "yarn" binary on the application container...
+# Proxy bun commands to the "bun" binary on the application container...
 elif [ "$1" == "bun" ]; then
     shift 1
     ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs bun "$@")
 
-# Initiate a Bash shell within the application container...
-elif [ "$1" == "shell" ] || [ "$1" == "bash" ]; then
+# Proxy to execute command into specific container
+elif [ "$1" == "exec" ]; then
     shift 1
     ARGS+=(exec -u sail)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=("php bash $@")
+    ARGS+=("$1" "$2")
+    shift 2
+    ARGS+=("$@")
+
+# Initiate a Bash shell within the application container...
+elif [ "$1" == "shell" ]; then
+    shift 1
+    ARGS+=(exec -u sail)
+    [ ! -t 0 ] && ARGS+=(-T)
+    if [ "$1" != "" ]; then
+        ARGS+=("$1")
+        shift 1
+        ARGS+=("bash $@")
+    else
+        echo
+        echo "Use:"
+        echo "  ${GREEN}sail shell <container-name> ${NC}"
+        echo
+        exit 1
+    fi
 
 # Initiate a root user Bash shell within the application container...
-elif [ "$1" == "shell-root" ] || [ "$1" == "bash-root" ]; then
+elif [ "$1" == "shell-root" ]; then
     shift 1
     ARGS+=(exec -u root)
     [ ! -t 0 ] && ARGS+=(-T)
-    ARGS+=("php bash $@")
+    if [ "$1" != "" ]; then
+        ARGS+=("$1")
+        shift 1
+        ARGS+=("bash $@")
+    else
+        echo
+        echo "Use:"
+        echo "  ${GREEN}sail shell-root <container-name>${NC}"
+        echo
+        exit 1
+    fi
 
 # Initiate a Redis CLI terminal session within the "redis" container...
 elif [ "$1" == "redis" ] ; then
