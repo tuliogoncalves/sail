@@ -59,6 +59,10 @@ function display_help {
     echo "${YELLOW}Build sail imagens:${NC}"
     echo "  ${GREEN}sail make {file} ${NC}  Create sail builder image"
     echo
+    echo "${YELLOW}Backp/Restore databases:${NC}"
+    echo "  ${GREEN}sail sqlserve:list {file} ${NC}  Create sail builder image"
+    echo "  ${GREEN}sail sqlserve:restore {file} ${NC}  Create sail builder image"
+    echo
     echo "${YELLOW}Sail's remote containers Commands:${NC}"
     echo "  ${GREEN}sail {project}:up${NC}         Start the sail container's"
     echo "  ${GREEN}sail {project}:down${NC}       Finish the sail container's"
@@ -453,6 +457,13 @@ elif [ "$1" == "npx" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npx "$@")
 
+# Proxy PNPM commands to the "npx" binary on the application container...
+elif [ "$1" == "pnpm" ]; then
+    shift 1
+    ARGS+=(exec -u sail)
+    [ ! -t 0 ] && ARGS+=(-T)
+    ARGS+=(nodejs pnpm "$@")
+
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1
@@ -498,6 +509,39 @@ elif [ "$1" == "share" ]; then
         --auth="$SAIL_SHARE_TOKEN" \
         --subdomain="$SAIL_SHARE_SUBDOMAIN" \
         "$@"
+    exit 0
+
+elif [ "$1" == "sqlserver:list" ]; then
+    # shift 1
+
+    # Copy File
+    docker exec -it -u root sqlserver mkdir /var/opt/mssql/backup
+    docker cp $SCRIPTPATH/../backup/$2 sqlserver:/var/opt/mssql/backup/$2
+
+    # Let's find out the logical file names and paths inside the backup
+    docker exec -it -u root sqlserver /opt/mssql-tools/bin/sqlcmd \
+    -S localhost \
+    -U SA \
+    -P "Psswd#123" \
+    -Q "RESTORE FILELISTONLY FROM DISK = '/var/opt/mssql/backup/$2'" \
+        | tr -s ' ' | cut -d ' ' -f 1-2
+    
+    exit 0
+
+elif [ "$1" == "sqlserver:restore" ]; then
+    query="RESTORE DATABASE $3 FROM DISK = '/var/opt/mssql/backup/$2' WITH MOVE '$3' TO '/var/opt/mssql/data/$3.mdf'"
+    [ "$4" != "" ] && query+=", MOVE '$4' TO '/var/opt/mssql/data/$4.ldf'"
+    [ "$5" != "" ] && query+=", MOVE '$5' TO '/var/opt/mssql/data/$5.ndf'"
+
+    # let's restore the backup
+    docker exec -it -u root sqlserver /opt/mssql-tools/bin/sqlcmd \
+    -S localhost \
+    -U SA \
+    -P "Psswd#123" \
+    -Q "$query"
+
+    # -Q "RESTORE DATABASE siafic FROM DISK = '/var/opt/mssql/backup/$2' WITH MOVE 'siafic' TO '/var/opt/mssql/data/siafic.mdf', MOVE 'siafic_Log' TO '/var/opt/mssql/data/siafic_log.ldf'"
+
     exit 0
 
 # Build App

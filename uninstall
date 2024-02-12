@@ -15,6 +15,9 @@ rm -f /usr/local/bin/node
 # npm
 rm -f /usr/local/bin/npm
 
+# pnpm
+rm -f /usr/local/bin/pnpm
+
 # php
 rm -f /usr/local/bin/php
 
