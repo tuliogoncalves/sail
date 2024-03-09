@@ -1,4 +1,4 @@
-FROM php:8.1-fpm as fpm81
+FROM php:8.2-fpm as fpm81
 
 # Arguments defined in docker-compose.yml
 ARG WWWGROUP
