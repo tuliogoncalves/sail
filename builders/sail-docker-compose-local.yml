@@ -1,0 +1,51 @@
+version: "3.7"
+
+networks:
+  app:
+    name: ${PROJECT_NAME}
+
+  proxy:
+    name: proxy
+    # external: true
+
+services:
+    php:
+        container_name: ${PROJECT_NAME}.php
+        hostname: ${PROJECT_NAME}.php
+        image: sail:php82
+        restart: unless-stopped
+        volumes:
+            - ./:/var/www
+            - ./sail_builders/common/supervisord.php.conf:/etc/supervisor/conf.d/supervisord.conf
+        networks:
+            - app
+            - proxy
+
+    nginx:
+        container_name: ${PROJECT_NAME}.nginx
+        hostname: ${PROJECT_NAME}.back
+        image: nginx:stable-alpine
+        restart: unless-stopped
+        # ports:
+        #     - "80:80"
+        volumes: 
+            - ./:/var/www
+            - ./sail_builders/common/nginx.local.conf/:/etc/nginx/conf.d/local.conf
+        networks: 
+            - app
+            - proxy
+
+    nodejs:
+        container_name: ${PROJECT_NAME}.nodejs
+        hostname: ${PROJECT_NAME}.front
+        image: sail:node18
+        tty: true
+        restart: unless-stopped
+        # ports:
+        #     - "80:5173"
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks: 
+            - app
+            - proxy

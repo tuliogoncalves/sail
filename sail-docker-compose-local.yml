@@ -1,10 +1,9 @@
-version: "3.7"
 
 name: sail-db
 
 networks:
-  proxy:
-    name: proxy
+  database:
+    name: database
     # external: true
 
 services:
@@ -17,13 +16,13 @@ services:
       MYSQL_ROOT_PASSWORD: "Psswd#123"
       MYSQL_ROOT_HOST: "%"
       # MYSQL_DATABASE: '${DB_DATABASE}'
-      # MYSQL_USER: 'db_user'
-      # MYSQL_PASSWORD: "Psswd#123"
+      MYSQL_USER: 'homestead'
+      MYSQL_PASSWORD: ""
       MYSQL_ALLOW_EMPTY_PASSWORD: 1
     volumes: 
         - mariadb:/var/lib/mysql
     networks: 
-      - proxy
+      - database
     ulimits:
       nproc: 65535
       nofile:
@@ -38,7 +37,7 @@ services:
     volumes: 
       - redis:/data
     networks: 
-      - proxy
+      - database
 
   # mysql5:
   #   container_name: mysql5
@@ -47,32 +46,33 @@ services:
   #     - 3307:3306
   #   environment:
   #     MYSQL_ROOT_PASSWORD: "Psswd#123"
-  #     MYSQL_ROOT_HOST: "%"
+  #     # MYSQL_ROOT_HOST: "%"
   #     # MYSQL_DATABASE: '${DB_DATABASE}'
-  #     # MYSQL_USER: '${DB_USERNAME}'
-  #     # MYSQL_PASSWORD: '${DB_PASSWORD}'
-  #     MYSQL_ALLOW_EMPTY_PASSWORD: 1
+  #     MYSQL_USER: 'db_user'
+  #     MYSQL_PASSWORD: "Psswd#123"
   #   volumes:
   #     - mysql5:/var/lib/mysql
   #   networks:
-  #     - proxy
+  #     - database
 
-  mysql:
-    container_name: mysql
-    image: 'mysql/mysql-server:8.0'
-    ports:
-      - 3307:3306
-    environment:
-      MYSQL_ROOT_PASSWORD: "Psswd#123"
-      MYSQL_ROOT_HOST: "%"
-      # MYSQL_DATABASE: '${DB_DATABASE}'
-      # MYSQL_USER: '${DB_USERNAME}'
-      # MYSQL_PASSWORD: '${DB_PASSWORD}'
-      MYSQL_ALLOW_EMPTY_PASSWORD: 1
-    volumes:
-      - mysql:/var/lib/mysql
-    networks:
-      - proxy
+  # mysql:
+  #   container_name: mysql
+  #   image: mysql:8
+  #   platform: linux/amd64
+  #   ports:
+  #       - '3307:3306'
+  #   security_opt:
+  #       - seccomp:unconfined
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: "Psswd#123"
+  #     # MYSQL_ROOT_HOST: "%"
+  #     # MYSQL_DATABASE: '${DB_DATABASE}'
+  #     MYSQL_USER: 'db_user'
+  #     MYSQL_PASSWORD: "Psswd#123"
+  #   volumes:
+  #     - mysql8:/var/lib/mysql
+  #   networks:
+  #     - database
 
   # pgsql:
   #   container_name: postgres
@@ -88,7 +88,7 @@ services:
   #   volumes:
   #     - pgsql:/var/lib/postgresql/data
   #   networks:
-  #     - proxy
+  #     - database
 
   # sqlserver:
   #   container_name: sqlserver
@@ -103,12 +103,12 @@ services:
   #   volumes:
   #     - sqlserver:/var/opt/mssql
   #   networks:
-  #     - proxy
+  #     - database
 
 volumes:
   redis:
   mysql5:
-  mysql:
+  mysql8:
   mariadb:
   pgsql:
   sqlserver:

@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+UNAMEOUT="$(uname -s)"
+
+WHITE='\033[1;37m'
+NC='\033[0m'
+
+# Verify operating system is supported...
+case "${UNAMEOUT}" in
+    Linux*)             MACHINE=linux;;
+    Darwin*)            MACHINE=mac;;
+    *)                  MACHINE="UNKNOWN"
+esac
+
+if [ "$MACHINE" == "UNKNOWN" ]; then
+    echo "Unsupported operating system [$(uname -r -v)]. Scriptpage Sail supports macOS, Linux, and Windows (WSL2)." >&2
+    exit 1
+fi
+
+# Determine if stdout is a terminal...
+if test -t 1; then
+    # Determine if colors are supported...
+    ncolors=$(tput colors)
+
+    if test -n "$ncolors" && test "$ncolors" -ge 8; then
+        BOLD="$(tput bold)"
+        YELLOW="$(tput setaf 3)"
+        GREEN="$(tput setaf 2)"
+        NC="$(tput sgr0)"
+    fi
+fi
+
+if [ -f .sail.env ]; then
+    source .sail.env
+fi
+
+# Define local variables...
+PWD="$(pwd)"
+PWD_BASENAME="$(basename $PWD)"
+PROJECT="$(awk -F':' '{print $1}' <<< $1)"
+DOCKERFILE="Dockerfile_$1"
+BUILDERFILE="$1"
+PROJECT_NAME=${PROJECT_NAME:-$PWD_BASENAME}
+WWWGROUP=${WWWGROUP:-$(id -g)}
+
+TAG="$PROJECT_NAME:$BUILDERFILE"
+
+shift 1
+
+if [ -f $PWD/sail_builders/${DOCKERFILE} ]; then
+    cd $PWD/sail_builders
+else
+    echo
+    echo "$DOCKERFILE not exists in builder folder of sail"
+    echo
+    echo "You must define a valid Dockerfile to build as parameter"
+    echo
+    exit 1
+fi
+
+docker buildx build --tag $TAG \
+            --cache-from $TAG  \
+            --build-arg WWWGROUP="$WWWGROUP" \
+            -f $DOCKERFILE \
+            . $@
+
+#Return origin path
+cd $PWD
+
+exit 0

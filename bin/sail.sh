@@ -13,7 +13,7 @@ case "${UNAMEOUT}" in
 esac
 
 if [ "$MACHINE" == "UNKNOWN" ]; then
-    echo "Unsupported operating system [$(uname -s)]. Scriptpage Sail supports macOS, Linux, and Windows (WSL2)." >&2
+    echo "Unsupported operating system [$(uname -r -v)]. Scriptpage Sail supports macOS, Linux, and Windows (WSL2)." >&2
     exit 1
 fi
 
@@ -31,16 +31,16 @@ if test -t 1; then
 fi
 
 # Define local variables...
-FullPath=$(readlink -f "${BASH_SOURCE:-$0}")
-SCRIPTPATH=$(dirname $FullPath)
-
-DOCKERFILE="Dockerfile_$2"
-TAG="sail:$2"
-
-ARGS=(-f sail-docker-compose-local.yml)
 PWD="$(pwd)"
+FullPath=$(readlink -f "${BASH_SOURCE:-$0}")
+SAIL_BIN=$(dirname $FullPath)
+PWD_BASENAME="$(basename $PWD)"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
+DOCKERFILE="Dockerfile_$2"
+BUILDERFILE="$2"
 
+# Define environment variables...
+export WWWGROUP=${WWWGROUP:-$(id -g)}
 
 # Function that prints the available commands...
 function display_help {
@@ -58,6 +58,7 @@ function display_help {
     echo
     echo "${YELLOW}Build sail imagens:${NC}"
     echo "  ${GREEN}sail make {file} ${NC}  Create sail builder image"
+    echo "  ${GREEN}sail copy:builder {file} ${NC}  Copy sail builder image to project"
     echo
     echo "${YELLOW}Backp/Restore databases:${NC}"
     echo "  ${GREEN}sail sqlserve:list {file} ${NC}  Create sail builder image"
@@ -120,21 +121,26 @@ function display_help {
 
 function builder {
     #Get .env sail
-    cd $SCRIPTPATH/../
-    define_environment
 
-    cd $SCRIPTPATH/../builders
+    if [ -f $PWD/sail_client/builders/${DOCKERFILE} ]; then
+        cd $PWD/sail_client/builders
+    else
+        cd $SAIL_BIN/../
+        define_environment
 
-    if [[ ! -f ${DOCKERFILE} ]]; then
-        echo
-        echo "$DOCKERFILE not exists in builder folder of sail"
-        echo
-        echo "You must define a valid Dockerfile to build as parameter"
-        echo
-        exit 1
+        cd $SAIL_BIN/../builders
+
+        if [ ! -f ${DOCKERFILE} ]; then
+            echo
+            echo "$DOCKERFILE not exists in builder folder of sail"
+            echo
+            echo "You must define a valid Dockerfile to build as parameter"
+            echo
+            exit 1
+        fi
     fi
 
-    docker $BUILDER --tag $TAG \
+    docker buildx build --tag $TAG \
              --cache-from $TAG  \
              --build-arg WWWGROUP="$WWWGROUP" \
              -f $DOCKERFILE \
@@ -157,39 +163,67 @@ function validate_sudo {
 
 function define_environment {
     # Source the ".env" file so Laravel's environment variables are available...
-    if [ -f .env ]; then
-        source .env
+    if [ -f .sail.env ]; then
+        source .sail.env
     fi
 
    # Define environment variables...
-    export WWWGROUP=${WWWGROUP:-$(id -g)}
-    export APP_PROJECT_NAME=${APP_PROJECT_NAME:-"scriptage"}
+    export PROJECT_NAME=${PROJECT_NAME:-$PWD_BASENAME}
 
-    export APP_ENV=${APP_ENV:-"local"}
-
-    export SAIL_FILES=${SAIL_FILES:-""}
     export SAIL_SHARE_DASHBOARD=${SAIL_SHARE_DASHBOARD:-4040}
     export SAIL_SHARE_SERVER_HOST=${SAIL_SHARE_SERVER_HOST:-"laravel-sail.site"}
     export SAIL_SHARE_SERVER_PORT=${SAIL_SHARE_SERVER_PORT:-8080}
     export SAIL_SHARE_SUBDOMAIN=${SAIL_SHARE_SUBDOMAIN:-""}
 
-    if [ "$APP_ENV" == "production" ] || [ "$APP_ENV" == "prod" ]; then
-        if [ -f ./sail-docker-compose-prod.yml ]; then
-            ARGS=(-f sail-docker-compose-prod.yml)
-        fi
+    TAG="$PROJECT_NAME:$BUILDERFILE"
+    ARGS=(-f $FILE_COMPOSE)
+}
+
+function copy_builder {
+    # copy client_sail folder, if not exists
+    echo
+    if [ ! -d sail_builders ]; then
+        echo -e "${GREEN}Not copied. sail_client not exists!"
+    else
+        cp -rn $SAIL_BIN/../builders/common ./sail_builders
+        cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
+        cp -n $SAIL_BIN/../builders/${DOCKERFILE} ./sail_builders/${DOCKERFILE} 
+        echo -e "${GREEN} ${DOCKERFILE} builder copied!"
     fi
+
+    echo 
+
+    #Return origin path
+    cd $PWD
+
+    exit 0
 }
 
 function copy_client {
     # copy client_sail folder, if not exists
     echo
-    if [ -d sail_client ]; then
-        echo -e "${GREEN}Not copied. sail_client exists!"
+    if [ -d sail_builders ]; then
+        echo -e "${GREEN}Not copied. sail_builders exists!"
     else
-        cp -r $SCRIPTPATH/../client/sail_client .
-        echo -e "\n/sail_client/logs" >> .gitignore
-        echo -e "\n/sail_client" >> .gitignore
-        echo -e "${GREEN}sail_client copied!"
+        mkdir -p ./sail_builders
+        cp -rn $SAIL_BIN/../builders/common ./sail_builders/common
+        cp -rn $SAIL_BIN/../builders/scripts ./sail_builders/scripts
+        cp -n $SAIL_BIN/../builders/sail_make.sh ./
+        cp -n $SAIL_BIN/../builders/README ./sail_builders
+        echo -e "\n/sail_builders/logs" >> .gitignore
+        echo -e "\n/sail_builders" >> .gitignore
+        echo -e "\nsail_make.sh" >> .gitignore
+        echo -e "${GREEN}sail_builders copied!"
+    fi
+
+    # copy .sail.env, if not exists
+    echo
+    if [ -f .sail.env ]; then
+        echo -e "${GREEN}Not copied. .sail.env exists!"
+    else
+        cp -a $SAIL_BIN/../builders/env/.sail.env ./.sail.env
+        echo -e ".sail.env" >> .gitignore
+        echo -e "${GREEN}.sail.env copied!"
     fi
 
     # copy sail-docker-compose.yml, if not exists
@@ -197,33 +231,23 @@ function copy_client {
     if [ -f sail-docker-compose-local.yml ]; then
         echo -e "${YELLOW}Not copied. sail-docker-compose-local.yml exists!"
     else
-        cp $SCRIPTPATH/../client/sail-docker-compose-local.yml .
+        cp $SAIL_BIN/../builders/sail-docker-compose-local.yml .
         echo -e "sail-docker-compose-local.yml" >> .gitignore
         echo -e "${GREEN}sail-docker-compose-local.yml copied!"
-    fi
-
-    # copy sail-docker-compose-prod.yml, if not exists
-    echo
-    if [ -f sail-docker-compose-prod.yml ]; then
-        echo -e "${GREEN}Not copied. sail-docker-compose-prod.yml exists!"
-    else
-        cp $SCRIPTPATH/../client/sail-docker-compose-prod.yml .
-        echo -e "sail-docker-compose-prod.yml" >> .gitignore
-        echo -e "${GREEN}sail-docker-compose-prod.yml copied!"
     fi
 
     echo
 }
 
 function cd_to_project {
-    pathproject=$SCRIPTPATH/../../$PROJECT
+    pathproject=$SAIL_BIN/../../$PROJECT
     if [ -d "$pathproject" ]; then
-        cd $SCRIPTPATH/../../$PROJECT
+        cd $SAIL_BIN/../../$PROJECT
     else
         echo
         echo "${YELLOW}Project not exists: ${NC}$PROJECT"
         echo
-        echo "  ${NC}verify: $SCRIPTPATH/../../$PROJECT"
+        echo "  ${NC}verify: $SAIL_BIN/../../$PROJECT"
         echo
         exit 1
     fi
@@ -357,7 +381,7 @@ elif [ "$1" == "php" ]; then
 
 # Up command to the project container's...
 elif [ "$1" == "caddy" ]; then
-    cd $SCRIPTPATH/..
+    cd $SAIL_BIN/..
     shift 1
     ARGS=(-f sail-docker-compose-proxy.yml)
     ARGS+=(exec -w /etc/caddy)
@@ -366,25 +390,25 @@ elif [ "$1" == "caddy" ]; then
 
 # Proxy Up container...
 elif [ "$1" == "db:up" ]; then
-    cd $SCRIPTPATH/..
+    cd $SAIL_BIN/..
     shift 1
     ARGS=(-f sail-docker-compose-local.yml up -d)
 
 # Proxy Down container...
 elif [ "$1" == "db:down" ]; then
-    cd $SCRIPTPATH/..
+    cd $SAIL_BIN/..
     shift 1
     ARGS=(-f sail-docker-compose-local.yml down)
 
 # Proxy Up container...
 elif [ "$1" == "proxy:up" ]; then
-    cd $SCRIPTPATH/..
+    cd $SAIL_BIN/..
     shift 1
     ARGS=(-f sail-docker-compose-proxy.yml up -d)
 
 # Proxy Down container...
 elif [ "$1" == "proxy:down" ]; then
-    cd $SCRIPTPATH/..
+    cd $SAIL_BIN/..
     shift 1
     ARGS=(-f sail-docker-compose-proxy.yml down)
 
@@ -526,7 +550,7 @@ elif [ "$1" == "shell-root" ]; then
 # Initiate a Redis CLI terminal session within the "redis" container...
 elif [ "$1" == "redis" ] ; then
     shift 1
-    cd $SCRIPTPATH/..
+    cd $SAIL_BIN/..
     ARGS+=(exec)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(redis redis-cli)
@@ -547,7 +571,7 @@ elif [ "$1" == "sqlserver:list" ]; then
 
     # Copy File
     docker exec -it -u root sqlserver mkdir /var/opt/mssql/backup
-    docker cp $SCRIPTPATH/../backup/$2 sqlserver:/var/opt/mssql/backup/$2
+    docker cp $SAIL_BIN/../backup/$2 sqlserver:/var/opt/mssql/backup/$2
 
     # Let's find out the logical file names and paths inside the backup
     docker exec -it -u root sqlserver /opt/mssql-tools/bin/sqlcmd \
@@ -579,6 +603,10 @@ elif [ "$1" == "sqlserver:restore" ]; then
 elif [ "$1" == "make" ]; then
     shift 2
     builder $@
+
+# Copy Builder to project
+elif [ "$1" == "copy:builder" ]; then
+    copy_builder $@
 
 # Pass unknown commands to the "docker-compose" binary...
 else
