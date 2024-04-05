@@ -1,5 +1,6 @@
-version: "3.7"
-
+# 
+# <<< Project Name >>>
+# 
 networks:
   app:
     name: ${PROJECT_NAME}
@@ -16,7 +17,8 @@ services:
         restart: unless-stopped
         volumes:
             - ./:/var/www
-            - ./sail_builders/common/supervisord.php.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./sail_builders/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./sail_builders/supervisor/php-fpm.ini:/etc/supervisor.d/php-fpm.ini
         networks:
             - app
             - proxy

@@ -122,8 +122,8 @@ function display_help {
 function builder {
     #Get .env sail
 
-    if [ -f $PWD/sail_client/builders/${DOCKERFILE} ]; then
-        cd $PWD/sail_client/builders
+    if [ -f $PWD/sail_builders/${DOCKERFILE} ]; then
+        cd $PWD/sail_builders
     else
         cd $SAIL_BIN/../
         define_environment
@@ -187,6 +187,7 @@ function copy_builder {
     else
         cp -rn $SAIL_BIN/../builders/common ./sail_builders
         cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
+        cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
         cp -n $SAIL_BIN/../builders/${DOCKERFILE} ./sail_builders/${DOCKERFILE} 
         echo -e "${GREEN} ${DOCKERFILE} builder copied!"
     fi
@@ -208,7 +209,8 @@ function copy_client {
         mkdir -p ./sail_builders
         cp -rn $SAIL_BIN/../builders/common ./sail_builders/common
         cp -rn $SAIL_BIN/../builders/scripts ./sail_builders/scripts
-        cp -n $SAIL_BIN/../builders/sail_make.sh ./
+        cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
+        cp -n $SAIL_BIN/../builders/sail_make ./
         cp -n $SAIL_BIN/../builders/README ./sail_builders
         echo -e "\n/sail_builders/logs" >> .gitignore
         echo -e "\n/sail_builders" >> .gitignore

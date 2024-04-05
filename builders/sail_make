@@ -1,5 +1,23 @@
 #!/usr/bin/env bash
 
+
+#
+# Define local variables...
+#
+
+
+
+PROJECT_NAME="<<<< PROJECT NAME >>>>"
+
+
+
+PWD="$(pwd)"
+DOCKERFILE="Dockerfile_$1"
+BUILDERFILE="$1"
+WWWGROUP=${WWWGROUP:-$(id -g)}
+
+TAG="$PROJECT_NAME:$BUILDERFILE"
+
 UNAMEOUT="$(uname -s)"
 
 WHITE='\033[1;37m'
@@ -33,17 +51,6 @@ fi
 if [ -f .sail.env ]; then
     source .sail.env
 fi
-
-# Define local variables...
-PWD="$(pwd)"
-PWD_BASENAME="$(basename $PWD)"
-PROJECT="$(awk -F':' '{print $1}' <<< $1)"
-DOCKERFILE="Dockerfile_$1"
-BUILDERFILE="$1"
-PROJECT_NAME=${PROJECT_NAME:-$PWD_BASENAME}
-WWWGROUP=${WWWGROUP:-$(id -g)}
-
-TAG="$PROJECT_NAME:$BUILDERFILE"
 
 shift 1
 
