@@ -1,14 +1,6 @@
 # 
 # <<< Project Name >>>
 # 
-networks:
-  app:
-    name: ${PROJECT_NAME}
-
-  proxy:
-    name: proxy
-    # external: true
-
 services:
     php:
         container_name: ${PROJECT_NAME}.php
@@ -32,7 +24,9 @@ services:
         #     - "80:80"
         volumes: 
             - ./:/var/www
-            - ./sail_builders/common/nginx.local.conf/:/etc/nginx/conf.d/local.conf
+            # - ./sail_builders/common/nginx.dev.conf/:/etc/nginx/conf.d/dev.conf
+            - ./sail_builders/common/nginx-http.conf:/etc/nginx/nginx.conf
+            - ./sail_builders/common/nginx-server.conf:/etc/nginx/http.d/default.conf
         networks: 
             - app
             - proxy
@@ -51,3 +45,10 @@ services:
         networks: 
             - app
             - proxy
+networks:
+  app:
+    name: ${PROJECT_NAME}
+
+  proxy:
+    name: proxy
+    external: true

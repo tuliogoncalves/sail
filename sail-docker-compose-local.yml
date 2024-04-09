@@ -2,8 +2,8 @@
 name: sail-db
 
 networks:
-  database:
-    name: database
+  proxy:
+    name: proxy
     # external: true
 
 services:
@@ -22,7 +22,7 @@ services:
     volumes: 
         - mariadb:/var/lib/mysql
     networks: 
-      - database
+      - proxy
     ulimits:
       nproc: 65535
       nofile:
@@ -37,7 +37,7 @@ services:
     volumes: 
       - redis:/data
     networks: 
-      - database
+      - proxy
 
   # mysql5:
   #   container_name: mysql5
@@ -53,7 +53,7 @@ services:
   #   volumes:
   #     - mysql5:/var/lib/mysql
   #   networks:
-  #     - database
+  #     - proxy
 
   # mysql:
   #   container_name: mysql
@@ -72,7 +72,7 @@ services:
   #   volumes:
   #     - mysql8:/var/lib/mysql
   #   networks:
-  #     - database
+  #     - proxy
 
   # pgsql:
   #   container_name: postgres
@@ -88,7 +88,7 @@ services:
   #   volumes:
   #     - pgsql:/var/lib/postgresql/data
   #   networks:
-  #     - database
+  #     - proxy
 
   # sqlserver:
   #   container_name: sqlserver
@@ -103,7 +103,7 @@ services:
   #   volumes:
   #     - sqlserver:/var/opt/mssql
   #   networks:
-  #     - database
+  #     - proxy
 
 volumes:
   redis:
