@@ -7,6 +7,9 @@ services:
         hostname: ${PROJECT_NAME}.php
         image: sail:php82
         restart: unless-stopped
+        # entrypoint: /bin/sh
+        # stdin_open: true
+        # tty: true
         volumes:
             - ./:/var/www
             - ./sail_builders/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
