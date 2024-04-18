@@ -102,7 +102,7 @@ RUN ln -s /etc/php/8.1 /etc/php/current && \
 # Copy custom php files
 COPY ./common/php.cli.ini /etc/php/current/cli/conf.d/30-custom-php.ini
 COPY ./common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
-COPY ./common/php-fpm-www.conf /etc/php/current/fpm/pool.d/
+COPY ./common/php-fpm.conf /etc/php/current/fpm/pool.d/
 
 # For custom Configuration that comes from outside (via a docker compose mount)
 RUN mkdir /etc/php/current/fpm/user-conf.d && \
