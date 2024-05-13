@@ -6,21 +6,23 @@ networks:
     # external: true
 
 services:
-  # proxy:
-  #   container_name: proxy
-  #   image: caddy:latest
+  # caddy:
+  #   image: caddy:2.7.6
   #   restart: unless-stopped
+  #   cap_add:
+  #     - NET_ADMIN
   #   ports:
   #     - "80:80"
   #     - "443:443"
   #     - "443:443/udp"
   #   volumes:
   #     - ./Caddyfile:/etc/caddy/Caddyfile
-  #     - ./site:/srv
-  #     - proxy-data:/data
-  #     - proxy-config:/config
+  #     - /home/tulio/projects/rhural/front/dist:/var/www/rhural
+  #     - data:/data
+  #     - config:/config
   #   networks:
   #     - proxy
+
 
   proxy:
     image: 'jc21/nginx-proxy-manager:latest'
@@ -49,12 +51,11 @@ services:
         # DISABLE_IPV6: 'true'
     networks:
       - proxy
-
     volumes:
-      - proxy-data:/data
-      - proxy-config:/etc/letsencrypt
+      - data:/data
+      - config:/etc/letsencrypt
 
 volumes:
-  proxy-data:
-  proxy-config:
+  data:
+  config:
   

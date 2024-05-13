@@ -30,12 +30,46 @@
 	}
 }
 
-sinazure.localhost {
-	reverse_proxy sinazure.back:80
-}
+# <DOMÍNIO_DA_APLICAÇÃO> {
+#   @websockets {
+#     header Connection *Upgrade*
+#     header Upgrade    websocket
+#   }
 
-scriptpage.admin.localhost {
-	reverse_proxy scriptpage.admin.front:5173
+#   import security
+#   import static
+
+#   reverse_proxy /socket.io/* {APP_PROJECT_NAME}-socket:6001 {
+#     header_up Host {host}
+#     header_up X-Real-IP {remote}
+#   }
+
+#   reverse_proxy @websockets {APP_PROJECT_NAME}-socket:6001 {
+#     header_up Host {host}
+#     header_up X-Real-IP {remote_host}
+#     header_up X-Forwarded-For {remote_host}
+#     header_up X-Forwarded-Proto {scheme}
+#   }
+
+#   reverse_proxy * {APP_PROJECT_NAME}-nginx:80
+# }
+
+# sinazure.localhost {
+# 	reverse_proxy sinazure.back:80
+# }
+
+# scriptpage.admin.localhost {
+# 	reverse_proxy scriptpage.admin.front:5173
+# 	@ws {
+# 		header Connection *Upgrade*
+# 		header Upgrade websocket
+# 	}
+# }
+
+
+rhural.localhost {
+	root * /var/www/rhural
+	file_server
 	@ws {
 		header Connection *Upgrade*
 		header Upgrade websocket

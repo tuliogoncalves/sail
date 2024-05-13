@@ -54,3 +54,6 @@ Notes
 =====
 
   when "requires ext-zip" to php80 uses "--ignore-platform-req=ext-zip" for composer
+
+  Creating Network Proxy:
+        docker network create proxy --label "com.docker.compose.network=default"

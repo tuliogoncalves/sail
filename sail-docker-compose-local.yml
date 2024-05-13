@@ -4,11 +4,12 @@ name: sail-db
 networks:
   proxy:
     name: proxy
-    # external: true
+    external: true
 
 services:
   mariadb:
     container_name: mariadb
+    hostname: mariadb.sail
     image: mariadb:10
     ports:
       - 3306:3306
@@ -32,6 +33,7 @@ services:
   redis:
     container_name: redis
     image: redis:latest
+    hostname: redis.sail
     ports:
       - 6379:6379
     volumes: 
