@@ -186,6 +186,8 @@ function copy_builder {
         echo -e "${GREEN}Not copied. sail_client not exists!"
     else
         cp -rn $SAIL_BIN/../builders/common ./sail_builders
+        cp -rn $SAIL_BIN/../builders/env ./sail_builders
+        cp -rn $SAIL_BIN/../builders/logs ./sail_builders
         cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
         cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
         cp -n $SAIL_BIN/../builders/${DOCKERFILE} ./sail_builders/${DOCKERFILE} 
