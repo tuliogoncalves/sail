@@ -38,6 +38,11 @@ PWD_BASENAME="$(basename $PWD)"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
 DOCKERFILE="Dockerfile_$2"
 BUILDERFILE="$2"
+NEW_FILE_COMPOSE="docker-compose-$1.yml"
+
+if [ -f ${NEW_FILE_COMPOSE} ]; then
+    shift 1
+fi
 
 # Define environment variables...
 export WWWGROUP=${WWWGROUP:-$(id -g)}
@@ -176,7 +181,12 @@ function define_environment {
     export SAIL_SHARE_SUBDOMAIN=${SAIL_SHARE_SUBDOMAIN:-""}
 
     TAG="$PROJECT_NAME:$BUILDERFILE"
-    ARGS=(-f $FILE_COMPOSE)
+
+    if [ -f ${NEW_FILE_COMPOSE} ]; then
+        ARGS=(-f ${NEW_FILE_COMPOSE})
+    else
+        ARGS=(-f $FILE_COMPOSE)
+    fi
 }
 
 function copy_builder {
