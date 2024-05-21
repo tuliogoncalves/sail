@@ -38,9 +38,12 @@ PWD_BASENAME="$(basename $PWD)"
 PROJECT="$(awk -F':' '{print $1}' <<< $1)"
 DOCKERFILE="Dockerfile_$2"
 BUILDERFILE="$2"
-NEW_FILE_COMPOSE="docker-compose-$1.yml"
+NEW_FILE_COMPOSE1="docker-compose-$1.yml"
+NEW_FILE_COMPOSE2="docker-compose-$2.yml"
 
-if [ -f ${NEW_FILE_COMPOSE} ]; then
+OTHER_FILE_COMPOSE=$NEW_FILE_COMPOSE1
+
+if [ -f ${OTHER_FILE_COMPOSE} ]; then
     shift 1
 fi
 
@@ -182,8 +185,8 @@ function define_environment {
 
     TAG="$PROJECT_NAME:$BUILDERFILE"
 
-    if [ -f ${NEW_FILE_COMPOSE} ]; then
-        ARGS=(-f ${NEW_FILE_COMPOSE})
+    if [ -f ${OTHER_FILE_COMPOSE} ]; then
+        ARGS=(-f ${OTHER_FILE_COMPOSE})
     else
         ARGS=(-f $FILE_COMPOSE)
     fi
@@ -281,6 +284,8 @@ function cd_to_project {
         echo
         exit 1
     fi
+
+    OTHER_FILE_COMPOSE=$NEW_FILE_COMPOSE2
 }
 
 # Proxy the "help" command...
@@ -421,28 +426,28 @@ elif [ "$1" == "caddy" ]; then
 # Up command to the project container's...
 elif [[ "$1" == *":up"* ]]; then
     cd_to_project
-    shift 1
+    shift 2
     define_environment
     ARGS+=(up -d)
 
 # Down command to the project container's...
 elif [[ "$1" == *":down"* ]]; then
     cd_to_project
-    shift 1
+    shift 2
     define_environment
     ARGS+=(down)
 
 # Start command to the project container's...
 elif [[ "$1" == *":start"* ]]; then
     cd_to_project
-    shift 1
+    shift 2
     define_environment
     ARGS+=(start)
 
 # Stop command to the project container's...
 elif [[ "$1" == *":stop"* ]]; then
     cd_to_project
-    shift 1
+    shift 2
     define_environment
 
     ARGS+=(stop)
@@ -450,7 +455,7 @@ elif [[ "$1" == *":stop"* ]]; then
 # Restart command to the project container's...
 elif [[ "$1" == *":restart"* ]]; then
     cd_to_project
-    shift 1
+    shift 2
     define_environment
     ARGS+=(restart)
 
