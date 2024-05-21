@@ -196,8 +196,6 @@ function copy_builder {
         echo -e "${GREEN}Not copied. sail_client not exists!"
     else
         cp -rn $SAIL_BIN/../builders/common ./sail_builders
-        cp -rn $SAIL_BIN/../builders/env ./sail_builders
-        cp -rn $SAIL_BIN/../builders/logs ./sail_builders
         cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
         cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
         cp -n $SAIL_BIN/../builders/${DOCKERFILE} ./sail_builders/${DOCKERFILE} 
@@ -216,41 +214,59 @@ function copy_client {
     # copy client_sail folder, if not exists
     echo
     if [ -d sail_builders ]; then
-        echo -e "${GREEN}Not copied. sail_builders exists!"
+        echo -e "${YELLOW}Not copied. sail_builders exists!"
     else
         mkdir -p ./sail_builders
-        cp -rn $SAIL_BIN/../builders/common ./sail_builders/common
-        cp -rn $SAIL_BIN/../builders/scripts ./sail_builders/scripts
-        cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
-        cp -n $SAIL_BIN/../builders/sail_make ./
+        cp -rn $SAIL_BIN/../builders/env ./sail_builders
+        cp -rn $SAIL_BIN/../builders/logs ./sail_builders
         cp -n $SAIL_BIN/../builders/README ./sail_builders
         echo -e "\n/sail_builders/logs" >> .gitignore
         echo -e "\n/sail_builders" >> .gitignore
         echo -e "\nsail_make.sh" >> .gitignore
-        echo -e "${GREEN}sail_builders copied!"
     fi
 
     # copy .sail.env, if not exists
     echo
     if [ -f .sail.env ]; then
-        echo -e "${GREEN}Not copied. .sail.env exists!"
+        echo -e "${YELLOW}Not copied. .sail.env exists!"
     else
         cp -a $SAIL_BIN/../builders/env/.sail.env ./.sail.env
         echo -e ".sail.env" >> .gitignore
         echo -e "${GREEN}.sail.env copied!"
     fi
 
-    # copy sail-docker-compose.yml, if not exists
+    # copy docker-compose-dev.yml, if not exists
     echo
-    if [ -f sail-docker-compose-local.yml ]; then
-        echo -e "${YELLOW}Not copied. sail-docker-compose-local.yml exists!"
+    if [ -f docker-compose-dev.yml ]; then
+        echo -e "${YELLOW}Not copied. docker-compose-dev.yml exists!"
     else
-        cp $SAIL_BIN/../builders/sail-docker-compose-local.yml .
-        echo -e "sail-docker-compose-local.yml" >> .gitignore
-        echo -e "${GREEN}sail-docker-compose-local.yml copied!"
+        cp $SAIL_BIN/../builders/docker-compose-dev.yml .
+        echo -e "docker-compose-dev.yml" >> .gitignore
+        echo -e "${GREEN}docker-compose-dev.yml copied!"
+    fi
+
+    # copy docker-db.yml, if not exists
+    echo
+    if [ -f docker-compose-db.yml ]; then
+        echo -e "${YELLOW}Not copied. docker-compose-db.yml exists!"
+    else
+        cp $SAIL_BIN/../builders/docker-compose-db.yml .
+        echo -e "docker-compose-db.yml" >> .gitignore
+        echo -e "${GREEN}docker-compose-db.yml copied!"
+    fi
+
+    # copy docker-proxy.yml, if not exists
+    echo
+    if [ -f docker-compose-proxy.yml ]; then
+        echo -e "${YELLOW}Not copied. docker-compose-proxy.yml exists!"
+    else
+        cp $SAIL_BIN/../builders/docker-compose-proxy.yml .
+        echo -e "docker-compose-proxy.yml" >> .gitignore
+        echo -e "${GREEN}docker-compose-proxy.yml copied!"
     fi
 
     echo
+    echo -e "${YELLOW}sail client installed!"
 }
 
 function cd_to_project {
