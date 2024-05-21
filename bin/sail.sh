@@ -402,30 +402,6 @@ elif [ "$1" == "caddy" ]; then
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(proxy caddy $@)
 
-# Proxy Up container...
-elif [ "$1" == "db:up" ]; then
-    cd $SAIL_BIN/..
-    shift 1
-    ARGS=(-f sail-docker-compose-local.yml up -d)
-
-# Proxy Down container...
-elif [ "$1" == "db:down" ]; then
-    cd $SAIL_BIN/..
-    shift 1
-    ARGS=(-f sail-docker-compose-local.yml down)
-
-# Proxy Up container...
-elif [ "$1" == "proxy:up" ]; then
-    cd $SAIL_BIN/..
-    shift 1
-    ARGS=(-f sail-docker-compose-proxy.yml up -d)
-
-# Proxy Down container...
-elif [ "$1" == "proxy:down" ]; then
-    cd $SAIL_BIN/..
-    shift 1
-    ARGS=(-f sail-docker-compose-proxy.yml down)
-
 # Up command to the project container's...
 elif [[ "$1" == *":up"* ]]; then
     cd_to_project
