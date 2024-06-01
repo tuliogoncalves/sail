@@ -1,0 +1,101 @@
+FROM ubuntu:22.04 as php83
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+ARG WWWGROUP=1000
+
+# Set a default conf for apt-get install
+RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
+
+# Install a few required packages
+RUN apt-get update -qq -y && \
+    apt install -qq -y \
+    curl \
+    gpg \
+    gnupg2 \
+    software-properties-common \
+    ca-certificates \
+    apt-transport-https \
+    lsb-release \
+    supervisor 
+
+RUN add-apt-repository ppa:ondrej/php --yes 
+
+# Update, upgrade
+RUN apt-get update -qq -y && \
+    apt-get upgrade -qq -y
+
+# Packages
+RUN apt-get install -qq -y \
+    # Calling fpm locally
+    libfcgi-bin \
+    php8.3 \
+    php8.3-bcmath \
+    php8.3-cli \
+    php8.3-curl \
+    php8.3-fpm \
+    php8.3-gd \
+    php8.3-gmp \
+    php8.3-imagick \
+    php8.3-imap \
+    php8.3-intl \
+    php8.3-ldap \
+    php8.3-mbstring \
+    php8.3-mcrypt \
+    php8.3-mysql \
+    php8.3-soap \
+    php8.3-xml \
+    php8.3-zip
+
+# Set a symlink to simplify the configuration, as we use a single php version
+RUN ln -s /etc/php/8.3 /etc/php/current && \
+    # Log to stdout
+    sed -i 's/^error_log.*/error_log = \/proc\/self\/fd\/2/g' /etc/php/current/fpm/php-fpm.conf && \
+    echo 'access.log = /proc/self/fd/2' >> /etc/php/current/fpm/php-fpm.conf && \
+    # Create log dir
+    mkdir /var/log/php && \
+    # Clean
+    apt-get autoremove -qq -y && \
+    apt-get autoclean -qq && \
+    apt-get clean -qq && \
+    # Empty some directories from all files and hidden files
+    rm -rf /build /tmp/* /usr/share/php/docs /usr/share/php/tests && \
+    find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
+
+# Copy custom php files
+COPY ./common/php.cli.ini /etc/php/current/cli/conf.d/30-custom-php.ini
+COPY ./common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
+COPY ./common/php-fpm.conf /etc/php/current/fpm/pool.d/
+
+# For custom Configuration that comes from outside (via a docker compose mount)
+RUN mkdir /etc/php/current/fpm/user-conf.d && \
+    echo "; Default empty file" > /etc/php/current/fpm/user-conf.d/example.conf && \
+    # Create home for www-data
+    mkdir /home/www-data && \
+    chown www-data:www-data /home/www-data && \
+    usermod -d /home/www-data www-data && \
+    mkdir -p /run/php && \
+    chown www-data:www-data /run/php
+
+# Prepere entrypoint
+COPY ./scripts/docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+# Prepere start
+# COPY ./scripts/start.sh /start.sh
+# RUN chmod +x /start.sh
+
+# Get latest Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data -u $WWWGROUP -d /home/sail sail
+RUN mkdir -p /home/sail/.composer && \
+    chown -R sail:sail /home/sail
+
+# Set working directory
+WORKDIR /var/www
+
+EXPOSE 9000
+
+ENTRYPOINT  ["/docker-entrypoint.sh"]
