@@ -225,7 +225,6 @@ function copy_client {
         cp -n $SAIL_BIN/../builders/README ./sail_builders
         echo -e "\n/sail_builders/logs" >> .gitignore
         echo -e "\n/sail_builders" >> .gitignore
-        echo -e "\nsail_make.sh" >> .gitignore
     fi
 
     # copy .sail.env, if not exists
@@ -267,6 +266,23 @@ function copy_client {
         echo -e "docker-compose-proxy.yml" >> .gitignore
         echo -e "${GREEN}docker-compose-proxy.yml copied!"
     fi
+
+    # copy sail_make, if not exists
+    echo
+    if [ -f sail_make ]; then
+        echo -e "${YELLOW}Not copied. sail_make.sh exists!"
+    else
+        cp $SAIL_BIN/../builders/sail_make .
+        echo -e "sail_make" >> .gitignore
+        echo -e "${GREEN}sail_make copied!"
+    fi
+
+    # copy builders folders
+    echo
+    cp -rn $SAIL_BIN/../builders/common ./sail_builders
+    cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
+    cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
+    echo -e "${YELLOW}builders folders copied!"
 
     echo
     echo -e "${YELLOW}sail client installed!"

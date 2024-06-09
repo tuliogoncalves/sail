@@ -5,8 +5,11 @@ services:
     php:
         container_name: ${PROJECT_NAME}.php
         hostname: ${PROJECT_NAME}.php
-        image: sail:php82
         restart: unless-stopped
+        image: sail:php82
+        # build:
+        #     context: .
+        #     dockerfile: ./sail_client/php/Dockerfile
         # entrypoint: /bin/sh
         # stdin_open: true
         # tty: true
