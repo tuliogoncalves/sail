@@ -2,7 +2,7 @@ FROM ubuntu:22.04 as php81
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG WWWGROUP
+ARG WWWGROUP=1000
 
 # Set a default conf for apt-get install
 RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
