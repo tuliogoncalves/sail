@@ -40,6 +40,7 @@ DOCKERFILE="Dockerfile_$2"
 BUILDERFILE="$2"
 NEW_FILE_COMPOSE1="docker-compose-$1.yml"
 NEW_FILE_COMPOSE2="docker-compose-$2.yml"
+SAIL_USER=sail
 
 OTHER_FILE_COMPOSE=$NEW_FILE_COMPOSE1
 
@@ -419,14 +420,14 @@ define_environment
 # Proxy Composer commands to the "composer" binary on the application container...
 if [ "$1" == "composer" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php composer $@)
 
 # Up command to the project container's...
 elif [ "$1" == "php" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php php $@)
 
@@ -478,63 +479,63 @@ elif [[ "$1" == *":restart"* ]]; then
 # Proxy Artisan commands to the "artisan" binary on the application container...
 elif [ "$1" == "artisan" ] || [ "$1" == "art" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php php artisan $@)
 
 # Proxy the "phpunit" command to "php vendor/bin/phpunit"...
 elif [ "$1" == "phpunit" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(php php vendor/bin/phpunit $@)
 
 # Proxy Node commands to the "node" binary on the application container...
 elif [ "$1" == "node" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs node $@)
 
 # Proxy NPM commands to the "npm" binary on the application container...
 elif [ "$1" == "npm" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npm $@)
 
 # Proxy NPX commands to the "npx" binary on the application container...
 elif [ "$1" == "npx" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs npx "$@")
 
 # Proxy PNPM commands to the "pnpm" binary on the application container...
 elif [ "$1" == "pnpm" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs pnpm "$@")
 
 # Proxy YARN commands to the "yarn" binary on the application container...
 elif [ "$1" == "yarn" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs yarn "$@")
 
 # Proxy bun commands to the "bun" binary on the application container...
 elif [ "$1" == "bun" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=(nodejs bun "$@")
 
 # Proxy to execute command into specific container
 elif [ "$1" == "exec" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     ARGS+=("$1" "$2")
     shift 2
@@ -543,7 +544,7 @@ elif [ "$1" == "exec" ]; then
 # Initiate a Bash shell within the application container...
 elif [ "$1" == "shell" ]; then
     shift 1
-    ARGS+=(exec -u sail)
+    ARGS+=(exec -u $SAIL_USER)
     [ ! -t 0 ] && ARGS+=(-T)
     if [ "$1" != "" ]; then
         ARGS+=("$1")
