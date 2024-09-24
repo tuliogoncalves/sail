@@ -1,9 +1,9 @@
-FROM ubuntu:22.04 as node18
+FROM ubuntu:22.04 AS node18
 
 ARG WWWGROUP
 ARG NODE_VERSION=18
 
-ENV DEBIAN_FRONTEND noninteractive
+ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -41,13 +41,22 @@ RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor | tee /usr
     && apt-get update \
     && apt-get install -y yarn
 
-# Create system user to run Node Commands
-RUN useradd -G www-data,root -u $WWWGROUP -d /home/sail sail
-RUN mkdir -p /home/sail/.composer && \
-    chown -R sail:sail /home/sail && \
-    chmod 777 /home/sail
+    
+# # Create system user to run Node Commands
+# RUN useradd -G www-data,root -u $WWWGROUP -d /home/sail sail
+# RUN mkdir -p /home/sail/.composer && \
+#     chown -R sail:sail /home/sail && \
+#     chmod 777 /home/sail
+
+# Create home for www-data
+RUN mkdir /home/www-data && \
+    chown www-data:www-data /home/www-data && \
+    groupmod -g $WWWGROUP www-data && \
+    usermod -u $WWWGROUP -d /home/www-data www-data && \
+    mkdir -p /run/php && \
+    chown www-data:www-data /run/php
 
 # Set working directory
 WORKDIR /var/www
 
-USER sail
+# USER sail

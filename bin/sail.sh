@@ -40,7 +40,7 @@ DOCKERFILE="Dockerfile_$2"
 BUILDERFILE="$2"
 NEW_FILE_COMPOSE1="docker-compose-$1.yml"
 NEW_FILE_COMPOSE2="docker-compose-$2.yml"
-SAIL_USER=sail
+SAIL_USER=www-data
 
 OTHER_FILE_COMPOSE=$NEW_FILE_COMPOSE1
 

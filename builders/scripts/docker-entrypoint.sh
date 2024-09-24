@@ -7,7 +7,8 @@ if [ -d /etc/php/current ]; then
     sed -i 's/^max_execution_time\s*=.*/max_execution_time = -1/g' /etc/php/current/fpm/conf.d/30-custom-php.ini
 fi
 
-if [ -d storage ]; then
+# When is laravel installation
+if [ -f artisan ]; then
     cd storage
     mkdir -p logs
     mkdir -p framework
@@ -21,14 +22,6 @@ if [ -d storage ]; then
     chmod -R 777 storage bootstrap
 fi
 
-echo
-echo "----------------------------"
-echo "--- Entreypoint Finished ---"
-echo "----------------------------"
-echo
-
-exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
-
 if [ -f /start.sh ]; then
     echo
     echo "--- Start custom script ---"
@@ -36,3 +29,11 @@ if [ -f /start.sh ]; then
 
     exec /start.sh
 fi
+
+echo
+echo "----------------------------"
+echo "--- Entreypoint Finished ---"
+echo "----------------------------"
+echo
+
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
