@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as php72
+FROM ubuntu:18.04 AS php72
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -75,10 +75,10 @@ RUN ln -s /etc/php/7.2 /etc/php/current && \
     pecl channel-update pecl.php.net && \
     pecl -q install mongodb redis xdebug-3.1.6 xhprof && \
     # Activate it
-    echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
-    echo "extension=redis.so" > /etc/php/current/mods-available/redis.ini && \
-    echo "zend_extension=xdebug.so" > /etc/php/current/mods-available/xdebug.ini && \
-    echo "extension=xhprof.so" > /etc/php/current/mods-available/xhprof.ini && \
+    # echo "extension=mongodb.so" > /etc/php/current/mods-available/mongodb.ini && \
+    # echo "extension=redis.so" > /etc/php/current/mods-available/redis.ini && \
+    # echo "zend_extension=xdebug.so" > /etc/php/current/mods-available/xdebug.ini && \
+    # echo "extension=xhprof.so" > /etc/php/current/mods-available/xhprof.ini && \
     phpenmod mongodb redis xdebug xhprof && \
     # Clean
     apt-get purge -qq --autoremove -y \
@@ -98,11 +98,13 @@ COPY ./common/php-fpm.conf /etc/php/current/fpm/pool.d/
 
 # For custom Configuration that comes from outside (via a docker compose mount)
 RUN mkdir /etc/php/current/fpm/user-conf.d && \
-    echo "; Default empty file" > /etc/php/current/fpm/user-conf.d/example.conf && \
-    # Create home for www-data
-    mkdir /home/www-data && \
+    echo "; Default empty file" > /etc/php/current/fpm/user-conf.d/example.conf
+
+# Create home for www-data
+RUN mkdir /home/www-data && \
     chown www-data:www-data /home/www-data && \
-    usermod -d /home/www-data www-data && \
+    groupmod -g $WWWGROUP www-data && \
+    usermod -u $WWWGROUP -d /home/www-data www-data && \
     mkdir -p /run/php && \
     chown www-data:www-data /run/php
 
@@ -113,10 +115,10 @@ RUN chmod +x /docker-entrypoint.sh
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data -u $WWWGROUP -d /home/sail sail
-RUN mkdir -p /home/sail/.composer && \
-    chown -R sail:sail /home/sail
+# # Create system user to run Composer and Artisan Commands
+# RUN useradd -G www-data -u $WWWGROUP -d /home/sail sail
+# RUN mkdir -p /home/sail/.composer && \
+#     chown -R sail:sail /home/sail
 
 # Set working directory
 WORKDIR /var/www
