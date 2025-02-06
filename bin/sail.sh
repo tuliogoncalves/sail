@@ -70,8 +70,8 @@ function display_help {
     echo "  ${GREEN}sail copy:builder {file} ${NC}  Copy sail builder image to project"
     echo
     echo "${YELLOW}Backp/Restore databases:${NC}"
-    echo "  ${GREEN}sail sqlserve:list {file} ${NC}  Upload and List database files "
-    echo "  ${GREEN}sail sqlserve:restore {file} {database.mdf} {database_log.ldf} {database.ndf} ${NC}  Restore database"
+    echo "  ${GREEN}sail sqlserver:list {file} ${NC}  Upload and List database files "
+    echo "  ${GREEN}sail sqlserver:restore {file} {database.mdf} {database_log.ldf} {database.ndf} ${NC}  Restore database"
     echo
     echo "${YELLOW}Sail's remote containers Commands:${NC}"
     echo "  ${GREEN}sail {project}:up${NC}         Start the sail container's"
