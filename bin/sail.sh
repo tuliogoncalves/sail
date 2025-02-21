@@ -66,8 +66,9 @@ function display_help {
     echo "  ${GREEN}sail off${NC}       Finish the docker service's"
     echo
     echo "${YELLOW}Build sail imagens:${NC}"
-    echo "  ${GREEN}sail make {file} ${NC}  Create sail builder image"
-    echo "  ${GREEN}sail copy:builder {file} ${NC}  Copy sail builder image to project"
+    echo "  ${GREEN}sail make {file} ${NC}         Create sail builder image"
+    echo "  ${GREEN}sail list:builders ${NC}       List sail builders Dockerfiles"
+    echo "  ${GREEN}sail copy:builder {file} ${NC} Copy sail builder image to project"
     echo
     echo "${YELLOW}Backp/Restore databases:${NC}"
     echo "  ${GREEN}sail sqlserver:list {file} ${NC}  Upload and List database files "
@@ -639,6 +640,14 @@ elif [ "$1" == "make" ]; then
 # Copy Builder to project
 elif [ "$1" == "copy:builder" ]; then
     copy_builder $@
+
+# List Sail's Builders
+elif [ "$1" == "list:builders" ]; then
+    cd $SAIL_BIN/../builders
+    ls -1 Dockerfile_*
+    cd $PWD
+
+    exit 0
 
 # Pass unknown commands to the "docker-compose" binary...
 else
