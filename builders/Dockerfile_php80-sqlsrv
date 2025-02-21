@@ -1,4 +1,4 @@
-FROM sail:php80 as php80_sqlsrv
+FROM sail:php80 AS php80_sqlsrv
 
 ARG  ACCEPT_EULA=Y
 ARG  DEBIAN_FRONTEND=noninteractive

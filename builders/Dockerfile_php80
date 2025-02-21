@@ -1,11 +1,11 @@
-FROM ubuntu:22.04 as php80
+FROM ubuntu:22.04 AS php80
 
 ARG DEBIAN_FRONTEND=noninteractive
 
-ARG WWWGROUP
+ARG WWWGROUP=1000
 
 # Set a default conf for apt-get install
-RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
+# RUN echo 'apt::install-recommends "false";' > /etc/apt/apt.conf.d/no-install-recommends
 
 # Install a few required packages
 RUN apt-get update -qq -y && \
@@ -93,29 +93,26 @@ COPY ./common/php-fpm.conf /etc/php/current/fpm/pool.d/
 
 # For custom Configuration that comes from outside (via a docker compose mount)
 RUN mkdir /etc/php/current/fpm/user-conf.d && \
-    echo "; Default empty file" > /etc/php/current/fpm/user-conf.d/example.conf && \
-    # Create home for www-data
-    mkdir /home/www-data && \
+    echo "; Default empty file" > /etc/php/current/fpm/user-conf.d/example.conf
+
+# Create home for www-data
+RUN mkdir /home/www-data && \
     chown www-data:www-data /home/www-data && \
-    usermod -d /home/www-data www-data && \
+    groupmod -g $WWWGROUP www-data && \
+    usermod -u $WWWGROUP -d /home/www-data www-data && \
     mkdir -p /run/php && \
     chown www-data:www-data /run/php
 
 # Prepere entrypoint
-COPY ./scripts/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+COPY ./scripts/docker-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
-# Create system user to run Composer and Artisan Commands
-RUN useradd -G www-data -u $WWWGROUP -d /home/sail sail
-RUN mkdir -p /home/sail/.composer && \
-    chown -R sail:sail /home/sail
 
 # Set working directory
 WORKDIR /var/www
 
 EXPOSE 9000
 
-ENTRYPOINT  ["/docker-entrypoint.sh"]
+ENTRYPOINT  ["/entrypoint.sh"]

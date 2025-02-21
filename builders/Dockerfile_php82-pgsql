@@ -1,5 +1,5 @@
 
-FROM sail:php82 as php82_pgsql
+FROM sail:php82 AS php82_pgsql
 
 ARG WWWGROUP
 ARG POSTGRES_VERSION=15
