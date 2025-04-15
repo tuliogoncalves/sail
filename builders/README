@@ -55,5 +55,14 @@ Notes
 
   when "requires ext-zip" to php80 uses "--ignore-platform-req=ext-zip" for composer
 
+  
   Creating Network Proxy:
         docker network create proxy --label "com.docker.compose.network=default"
+
+  
+  In vite.config.js, add:
+
+    server: {
+        host: '0.0.0.0', // permite conexões externas
+        port: 5173
+      },
