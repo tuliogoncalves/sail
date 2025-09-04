@@ -80,6 +80,8 @@ function display_help {
     echo "  ${GREEN}sail {project}:start${NC}      Start the sail container's"
     echo "  ${GREEN}sail {project}:stop${NC}       Stop the sail container's"
     echo "  ${GREEN}sail {project}:restart${NC}    Restart the sail container's"
+    echo "  ${GREEN}sail ls${NC}                   List conteiners running"
+    echo
     echo "  Examples:"
     echo "    ${GREEN}sail sail:up"
     echo "    ${GREEN}sail ApreMS:down"
@@ -648,6 +650,12 @@ elif [ "$1" == "list:builders" ]; then
     cd $PWD
 
     exit 0
+
+elif [ "$1" == "ls" ] ; then
+    shift 1
+    cd $SAIL_BIN/../builders
+    ARGS=(ls)
+
 
 # Pass unknown commands to the "docker-compose" binary...
 else
