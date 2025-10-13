@@ -202,10 +202,10 @@ function copy_builder {
     if [ ! -d sail_builders ]; then
         echo -e "${GREEN}Not copied. sail_client not exists!"
     else
-        cp -rn $SAIL_BIN/../builders/common ./sail_builders
-        cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
-        cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
-        cp -n $SAIL_BIN/../builders/${DOCKERFILE} ./sail_builders/${DOCKERFILE} 
+        cp -r --update=none $SAIL_BIN/../builders/common ./sail_builders
+        cp -r --update=none $SAIL_BIN/../builders/scripts ./sail_builders
+        cp -r --update=none $SAIL_BIN/../builders/supervisor ./sail_builders
+        cp --update=none $SAIL_BIN/../builders/${DOCKERFILE} ./sail_builders/${DOCKERFILE} 
         echo -e "${GREEN} ${DOCKERFILE} builder copied!"
     fi
 
@@ -224,9 +224,9 @@ function copy_client {
         echo -e "${YELLOW}Not copied. sail_builders exists!"
     else
         mkdir -p ./sail_builders
-        cp -rn $SAIL_BIN/../builders/env ./sail_builders
-        cp -rn $SAIL_BIN/../builders/logs ./sail_builders
-        cp -n $SAIL_BIN/../builders/README ./sail_builders
+        cp -r --update=none $SAIL_BIN/../builders/env ./sail_builders
+        cp -r --update=none $SAIL_BIN/../builders/logs ./sail_builders
+        cp --update=none $SAIL_BIN/../builders/README ./sail_builders
         echo -e "\n/sail_builders/logs" >> .gitignore
         echo -e "\n/sail_builders" >> .gitignore
     fi
@@ -283,9 +283,9 @@ function copy_client {
 
     # copy builders folders
     echo
-    cp -rn $SAIL_BIN/../builders/common ./sail_builders
-    cp -rn $SAIL_BIN/../builders/scripts ./sail_builders
-    cp -rn $SAIL_BIN/../builders/supervisor ./sail_builders
+    cp -r --update=none $SAIL_BIN/../builders/common ./sail_builders
+    cp -r --update=none $SAIL_BIN/../builders/scripts ./sail_builders
+    cp -r --update=none $SAIL_BIN/../builders/supervisor ./sail_builders
     echo -e "${YELLOW}builders folders copied!"
 
     echo

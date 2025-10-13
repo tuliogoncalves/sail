@@ -83,10 +83,6 @@ RUN mkdir /home/www-data && \
 COPY ./scripts/docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-# Prepere start
-# COPY ./scripts/start.sh /start.sh
-# RUN chmod +x /start.sh
-
 # Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
