@@ -13,29 +13,29 @@ createFile() {
 chmod +x ./bin/sail.sh
 ln -s $path/bin/sail.sh /usr/local/bin/sail
 
-# caddy (proxy)
-createFile caddy
+# # caddy (proxy)
+# createFile caddy
 
-# composer
-createFile composer
+# # composer
+# createFile composer
 
-# node
-createFile node
+# # node
+# createFile node
 
-# npm
-createFile npm
+# # npm
+# createFile npm
 
-# pnpm
-createFile pnpm
+# # pnpm
+# createFile pnpm
 
-# php
+# # php
 createFile php
 
-# bun
-createFile bun
+# # bun
+# createFile bun
 
-# npx
-createFile npx
+# # npx
+# createFile npx
 
-# yarn
-createFile yarn
+# # yarn
+# createFile yarn

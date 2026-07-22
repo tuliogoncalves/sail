@@ -29,22 +29,50 @@ RUN apt-get update -qq -y && \
 RUN apt-get install -qq -y \
     # Calling fpm locally
     libfcgi-bin \
-    php8.3 \
+    # Manipulate iptables rules (example: block smtps)
+    iptables \
+    # php8.3-cgi \
+    # php8.3-dba \
+    # php8.3-dev \
+    # php8.3-enchant \
+    # php8.3-phpdbg \
+    # php8.3-pspell \
+    # php8.3-recode \
+    # php8.3-snmp \
+    # php8.3-sybase \
+    # php8.3-tidy \
+    php8.3-apcu \
     php8.3-bcmath \
+    php8.3-bz2 \
     php8.3-cli \
     php8.3-curl \
     php8.3-fpm \
     php8.3-gd \
+    # php8.3-geoip \
     php8.3-gmp \
     php8.3-imagick \
     php8.3-imap \
+    php8.3-interbase \
     php8.3-intl \
+    # php8.3-json \
     php8.3-ldap \
     php8.3-mbstring \
     php8.3-mcrypt \
+    php8.3-memcache \
+    php8.3-memcached \
+    # php8.3-mongodb \
     php8.3-mysql \
+    php8.3-odbc \
+    php8.3-opcache \
+    php8.3-readline \
+    php8.3-redis \
     php8.3-soap \
+    php8.3-sqlite3 \
+    php8.3-ssh2 \
+    php8.3-xdebug \
+    php8.3-xhprof \
     php8.3-xml \
+    php8.3-xmlrpc \
     php8.3-zip
 
 # Set a symlink to simplify the configuration, as we use a single php version
@@ -63,8 +91,8 @@ RUN ln -s /etc/php/8.3 /etc/php/current && \
     find /root /var/lib/apt/lists /usr/share/man /usr/share/doc /var/cache /var/log -type f -delete
 
 # Copy custom php files
-COPY ./common/php.cli.ini /etc/php/current/cli/conf.d/30-custom-php.ini
-COPY ./common/php-fpm.ini /etc/php/current/fpm/conf.d/30-custom-php.ini
+COPY ./common/php.cli.ini  /etc/php/current/cli/conf.d/30-custom-php.ini
+COPY ./common/php-fpm.ini  /etc/php/current/fpm/conf.d/30-custom-php.ini
 COPY ./common/php-fpm.conf /etc/php/current/fpm/pool.d/
 
 # For custom Configuration that comes from outside (via a docker compose mount)
