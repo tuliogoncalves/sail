@@ -1,0 +1,24 @@
+services:
+    nodejs:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+            args:
+                NODE_VERSION: "20"
+        container_name: financas_nodejs
+        hostname: financas.front
+        restart: unless-stopped
+        tty: true
+        working_dir: /var/www
+        ports:
+            - "3000:3000"
+            - "4000:4000"
+        volumes:
+            - ~/projects/sail_runners/financas:/var/www
+        networks:
+            - proxy
+
+networks:
+    proxy:
+        name: proxy
+        external: true

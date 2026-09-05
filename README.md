@@ -27,6 +27,7 @@ sail_runners/
 │   └── sail_builders/               # arquivos de apoio para criar novos projetos (env, README, conf)
 ├── efd-reinf/                # projeto Laravel (PHP 7.4 + nginx)
 ├── sped-efdreinf/             # projeto Laravel (PHP 7.4 + nginx)
+├── financas/                 # monorepo TurboRepo (Next.js + NestJS + container nodejs)
 ├── install.sh                # instala os comandos em ~/.local/bin
 └── uninstall.sh               # remove os comandos instalados
 ```
@@ -174,7 +175,25 @@ sail art db:seed
 |-----------------|---------------------------------|------------------------------|
 | `efd-reinf`      | PHP 7.4 + Nginx (porta 8000)     | `docker-compose.yml`          |
 | `sped-efdreinf`  | PHP 7.4 + Nginx                 | `docker-compose.yml`          |
+| `financas`       | Node 20 (TurboRepo: Next.js `apps/web` + NestJS `apps/backend`), portas 3000/4000 | `docker-compose.yml` |
 | `server`         | Proxy, MariaDB, MySQL 8, SQL Server, Redis, template de projeto | `docker-compose-*.yml` |
+
+### `financas`
+
+Monorepo TurboRepo gerado pela skill `config-project`, rodando dentro de um
+único container `nodejs` (imagem própria em `financas/Dockerfile.dev`, sem
+depender de `sail:node18`):
+
+```bash
+sail financas up -d --build   # sobe (e builda, na primeira vez) o container
+cd financas
+npm install                   # roda dentro do container via wrapper
+npm run dev                   # sobe apps/web (3000) e apps/backend (4000)
+```
+
+`financas/.sail.env` define `SAIL_USER=1000:1000` para os comandos rodarem
+como o usuário `node` da imagem (mesmo UID/GID do host), evitando arquivos
+gerados como `root` no bind mount.
 
 ## Licença
 

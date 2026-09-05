@@ -1,0 +1,26 @@
+ARG NODE_VERSION="20"
+
+FROM node:${NODE_VERSION}-bookworm
+
+RUN apt-get update && apt-get -y --no-install-recommends install \
+    git \
+    nano \
+    curl \
+    && apt-get autoremove --purge -y && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# O código vem de um bind mount do host, cujo dono é o usuário do host
+# (UID diferente do container), e o git recusa operar num diretório
+# assim por padrão ("dubious ownership").
+RUN git config --system --add safe.directory /var/www
+
+# Comandos rodam como o usuário "node" (uid/gid do host via SAIL_USER) para
+# não deixar arquivos com dono "root" no bind mount; ele precisa poder
+# escrever nos diretórios globais do npm para instalar CLIs (ex.: @nestjs/cli).
+RUN chown -R node:node /usr/local/lib/node_modules /usr/local/bin
+
+WORKDIR /var/www
+
+EXPOSE 3000 4000
+
+CMD ["sleep", "infinity"]

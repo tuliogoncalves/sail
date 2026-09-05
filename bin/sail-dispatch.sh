@@ -27,6 +27,7 @@ case "$cmd_name" in
 esac
 
 # Sobe diretórios a partir do PWD até encontrar um .sail.env
+invocation_dir="$PWD"
 project_dir="$PWD"
 while [ "$project_dir" != "/" ]; do
     if [ -f "$project_dir/.sail.env" ]; then
@@ -74,6 +75,16 @@ if [ ! -t 0 ]; then
 fi
 if [ -n "${SAIL_USER:-}" ]; then
     exec_flags+=(--user "$SAIL_USER")
+fi
+
+# Mapeia o diretório real de onde o comando foi chamado (que pode ser um
+# subdiretório do projeto, ou um diretório temporário criado dentro dele)
+# para o caminho equivalente dentro do container, já que "docker compose
+# exec" por padrão roda no WORKDIR da imagem e ignora o $PWD do host.
+container_base="${CONTAINER_WORKDIR:-/var/www}"
+rel_path="$(realpath --relative-to="$project_dir" "$invocation_dir" 2>/dev/null || echo .)"
+if [ "$rel_path" != "." ] && [[ "$rel_path" != ..* ]]; then
+    exec_flags+=(--workdir "$container_base/$rel_path")
 fi
 
 exec docker compose -f "$FILE_COMPOSE" "${exec_flags[@]}" "$service" "${exec_cmd[@]}" "$@"
