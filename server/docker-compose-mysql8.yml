@@ -1,0 +1,35 @@
+
+name: sail-db
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+  infortech:
+    name: infortech
+    external: true
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    platform: linux/amd64
+    hostname: mysql8.sail
+    ports:
+        - '6606:3306'
+    security_opt:
+        - seccomp:unconfined
+    environment:
+      MYSQL_ROOT_PASSWORD: "Psswd#123"
+      # MYSQL_ROOT_HOST: "%"
+      # MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: 'db_user'
+      MYSQL_PASSWORD: "Psswd#123"
+    volumes:
+      - mysql8:/var/lib/mysql
+    networks:
+      - proxy
+
+
+volumes:
+  mysql8:
+

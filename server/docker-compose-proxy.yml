@@ -1,0 +1,66 @@
+name: sail-proxy
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+  infortech:
+    name: infortech
+    external: true
+
+services:
+  # caddy:
+  #   image: caddy:2.7.6
+  #   restart: unless-stopped
+  #   cap_add:
+  #     - NET_ADMIN
+  #   ports:
+  #     - "80:80"
+  #     - "443:443"
+  #     - "443:443/udp"
+  #   volumes:
+  #     - ./Caddyfile:/etc/caddy/Caddyfile
+  #     - /home/tulio/projects/rhural/front/dist:/var/www/rhural
+  #     - data:/data
+  #     - config:/config
+  #   networks:
+  #     - proxy
+
+
+  proxy:
+    image: 'jc21/nginx-proxy-manager:latest'
+    hostname: sail.proxy
+    restart: unless-stopped
+    ports:
+      # These ports are in format <host-port>:<container-port>
+      - '80:80'   # Public HTTP Port
+      - '443:443' # Public HTTPS Port
+      - '81:81'   # Admin Web Port
+      # Add any other Stream port you want to expose
+      # - '21:21' # FTP
+
+    # environment:
+    #   Uncomment this if you want to change the location of
+    #   the SQLite DB file within the container
+    #   DB_SQLITE_FILE: "/data/database.sqlite"
+
+    #   Uncomment this if you want to change To MySql database
+    #   DB_MYSQL_HOST: "mariadb"
+    #   DB_MYSQL_PORT: 3306
+    #   DB_MYSQL_USER: "db_user"
+    #   DB_MYSQL_PASSWORD: "Psswd#123"
+    #   DB_MYSQL_NAME: "nginxproxy"
+      
+    # Uncomment this if IPv6 is not enabled on your host
+        # DISABLE_IPV6: 'true'
+    networks:
+      - proxy
+      - infortech
+    volumes:
+      - data:/data
+      - config:/etc/letsencrypt
+
+volumes:
+  data:
+  config:
+  

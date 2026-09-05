@@ -1,0 +1,62 @@
+
+name: sail-db
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+
+services:
+  mariadb:
+    container_name: mariadb
+    image: mariadb:10
+    hostname: mariadb.sail
+    restart: unless-stopped
+    ports:
+      - 6606:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "Psswd#123"
+      MYSQL_ROOT_HOST: "%"
+      # MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: "db_user"
+      MYSQL_PASSWORD: "Psswd#123"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes: 
+        - mariadb:/var/lib/mysql
+        - ./sail_builders/production.cnf:/etc/mysql/conf.d/production.cnf:ro
+    networks: 
+      - proxy
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1.2G
+        reservations:
+          memory: 512M
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: redis.sail
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "no"]
+    ports:
+      - 6379:6379
+    volumes: 
+      - redis:/data
+    networks: 
+      - proxy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+  
+volumes:
+  redis:
+  mariadb:

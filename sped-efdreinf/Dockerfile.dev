@@ -1,0 +1,56 @@
+ARG PHP_VERSION="7.4"
+
+FROM php:${PHP_VERSION}-fpm
+
+RUN apt-get update && apt-get -y --no-install-recommends install \
+    mcrypt \
+    libxml2-dev \
+    openssl \
+    git \
+    nano \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    zip \
+    unzip \
+    supervisor \
+    wget \
+    && apt-get autoremove --purge -y && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+RUN docker-php-ext-install gd
+
+RUN docker-php-ext-install -j$(nproc) \
+    opcache \
+    intl \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath \
+    gd \
+    soap
+
+RUN pecl install apcu-5.1.20 xdebug-3.1.6 \
+    && docker-php-ext-enable apcu xdebug
+
+# O código vem de um bind mount do host, cujo dono é o usuário do host
+# (UID diferente do container), e o git recusa operar num diretório
+# assim por padrão ("dubious ownership").
+RUN git config --system --add safe.directory /var/www
+
+COPY docker/php.ini $PHP_INI_DIR/conf.d/php.ini
+COPY docker/php.dev.ini $PHP_INI_DIR/conf.d/zz-dev.ini
+
+RUN curl -sS https://getcomposer.org/installer | \
+    php -- --install-dir=/usr/local/bin --filename=composer
+
+COPY docker/entrypoint.dev.sh /usr/local/bin/entrypoint.dev.sh
+RUN chmod +x /usr/local/bin/entrypoint.dev.sh
+
+WORKDIR /var/www
+
+EXPOSE 9000
+
+ENTRYPOINT ["entrypoint.dev.sh"]
+CMD ["php-fpm"]

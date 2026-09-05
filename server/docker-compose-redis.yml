@@ -1,0 +1,28 @@
+
+name: sail-db
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+
+services:
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: redis.sail
+    ports:
+      - 6379:6379
+    volumes: 
+      - redis:/data
+    networks: 
+      - proxy
+
+volumes:
+  redis:
+  mysql5:
+  mysql8:
+  mariadb:
+  pgsql:
+  sqlserver:

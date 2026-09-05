@@ -1,0 +1,39 @@
+
+name: sail-db
+
+networks:
+  proxy:
+    name: proxy
+    external: true
+
+services:
+  mariadb:
+    container_name: mariadb
+    hostname: mariadb.sail
+    image: mariadb:10
+    ports:
+      - 6606:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: "Psswd#123"
+      MYSQL_ROOT_HOST: "%"
+      # MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: "db_user"
+      MYSQL_PASSWORD: "Psswd#123"
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+    volumes: 
+        - mariadb:/var/lib/mysql
+    networks: 
+      - proxy
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 26677
+        hard: 46677
+
+volumes:
+  redis:
+  mysql5:
+  mysql8:
+  mariadb:
+  pgsql:
+  sqlserver:

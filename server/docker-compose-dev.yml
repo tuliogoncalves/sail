@@ -1,0 +1,58 @@
+# 
+# <<< Project Name >>>
+# 
+services:
+    php:
+        container_name: ${PROJECT_NAME}.php
+        hostname: ${PROJECT_NAME}.php
+        image: sail:php82
+        restart: unless-stopped
+        # entrypoint: /bin/sh
+        # stdin_open: true
+        # tty: true
+        # privileged: true
+        volumes:
+            - ./:/var/www
+            - ./sail_builders/supervisor/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+            - ./sail_builders/supervisor/php-fpm.ini:/etc/supervisor.d/php-fpm.ini
+        networks:
+            - app
+            - proxy
+
+    nginx:
+        container_name: ${PROJECT_NAME}.nginx
+        hostname: ${PROJECT_NAME}.back
+        image: nginx:stable-alpine
+        restart: unless-stopped
+        # ports:
+        #     - "80:80"
+        volumes: 
+            - ./:/var/www
+            # - ./sail_builders/common/nginx.dev.conf/:/etc/nginx/conf.d/dev.conf
+            - ./sail_builders/common/nginx-http.conf:/etc/nginx/nginx.conf
+            - ./sail_builders/common/nginx-server.conf:/etc/nginx/http.d/default.conf
+        networks: 
+            - app
+            - proxy
+
+    nodejs:
+        container_name: ${PROJECT_NAME}.nodejs
+        hostname: ${PROJECT_NAME}.front
+        image: sail:node18
+        tty: true
+        restart: unless-stopped
+        # ports:
+        #     - "80:5173"
+        working_dir: /var/www/
+        volumes:
+            - ./:/var/www
+        networks: 
+            - app
+            - proxy
+networks:
+  app:
+    name: ${PROJECT_NAME}
+
+  proxy:
+    name: proxy
+    external: true
